@@ -11,6 +11,7 @@ namespace GroundControl
         private Transform m_transform;
         private Transform m_groundTranform;
 
+        // Must be initialized in Awake. GroundControlManager relies on it.
         private void Awake()
         {
             m_cargoShipPool = this.GetComponent<GameObjectPool>();

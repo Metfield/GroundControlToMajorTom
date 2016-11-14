@@ -14,6 +14,9 @@ namespace GroundControl
         private CargoShip2D m_shipToLaunch;
         private Timer m_launchTimer;
 
+        // GroundControlManager's initialization requiers that m_cargoShipSpawner is already initialized.
+        // CargoShipSpawner is initialized in its Awake. By initializing GroundControlManager in Start we 
+        // ensure that the spawner is ready.
         private void Start()
         {
             m_launchTimer = new Timer();
@@ -33,6 +36,9 @@ namespace GroundControl
             }
         }
 
+        /// <summary>
+        /// Prepare a cargo to be ready for launch
+        /// </summary>
         public void PrepareCargoShipForLaunch()
         {
             m_shipToLaunch = m_cargoShipSpawner.Spawn();
@@ -44,6 +50,9 @@ namespace GroundControl
             }
         }
 
+        /// <summary>
+        /// Launch a cargo ship if there is one ready.
+        /// </summary>
         public void LaunchCargoShip()
         {
             if(m_shipToLaunch != null)
@@ -54,6 +63,10 @@ namespace GroundControl
             }
         }
 
+        /// <summary>
+        /// Get the tranform of the worlds center
+        /// </summary>
+        /// <returns></returns>
         public Transform GetWorldCenter()
         {
             return transform;

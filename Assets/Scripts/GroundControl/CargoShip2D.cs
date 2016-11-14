@@ -39,8 +39,6 @@ namespace GroundControl
         private float m_accelerationTime = 1.0f;
 
         private float m_groundLevel;
-        private float m_launchAngle;
-        private float m_orbitAngle;
 
         private Transform m_transform;
         private Orbit2D m_orbit;
@@ -89,6 +87,9 @@ namespace GroundControl
             // Do nothing
         }
 
+        /// <summary>
+        /// Update for launching into space
+        /// </summary>
         private void LaunchUpdate()
         {
             // Calculate current velocity
@@ -105,6 +106,7 @@ namespace GroundControl
 
             float currentHeight = CalculateHeight();
             
+            // Calculate the orientation of the cargo ship based on current height
             Vector3 localRight = Vector3.Cross(Vector3.forward, localUp);
             Vector3 localOrientation = Vector3.Lerp(localUp, localRight, currentHeight / m_maxHeight);
             m_transform.LookInDirection2D(localOrientation);
@@ -117,6 +119,9 @@ namespace GroundControl
             }
         }
 
+        /// <summary>
+        /// Update when in orbit
+        /// </summary>
         private void OrbitUpdate()
         {
             m_orbit.Orbit();
@@ -129,6 +134,9 @@ namespace GroundControl
             }
         }
 
+        /// <summary>
+        /// Update the falling back to earth
+        /// </summary>
         private void FallUpdate()
         {
             // Calculate current velocity
@@ -145,6 +153,7 @@ namespace GroundControl
 
             float currentHeight = CalculateHeight();
 
+            // Calculate the orientation of the cargo ship based on current height
             Vector3 localRight = Vector3.Cross(localDown, Vector3.forward);
             Vector3 localOrientation = Vector3.Lerp(localRight, localDown,  1.0f - (currentHeight / m_maxHeight));
             m_transform.LookInDirection2D(localOrientation);
@@ -158,11 +167,18 @@ namespace GroundControl
             }
         }
 
+        /// <summary>
+        /// When the cargo ship was collected
+        /// </summary>
         public void WasCollected()
         {
             Remove();
         }
 
+        /// <summary>
+        /// Calculate the height between the ground and the cargo ship
+        /// </summary>
+        /// <returns></returns>
         public float CalculateHeight()
         {
             return Vector3.Distance(m_transform.position, m_orbit.GetOrbitPoint()) - m_groundLevel;
@@ -173,22 +189,33 @@ namespace GroundControl
             m_state = nextState;
         }
 
+        /// <summary>
+        /// Remove the cargo ship from the scene by deactivating it so it returns to the pool.
+        /// </summary>
         private void Remove()
         {
             gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// Launch the cargo ship into space if it is currently grounded
+        /// </summary>
         public void Launch()
         {
-            m_transform.SetParent(null);
-            SetState(ECargoShipState.Launching);
-            m_groundLevel = Vector3.Distance(m_transform.position, m_orbit.GetOrbitPoint());
-            m_timer.Reset();
-            m_timer.Start();
-            m_launchAngle = m_transform.rotation.eulerAngles.z;
-            m_orbitAngle = m_launchAngle + 90.0f;
+            if(m_state == ECargoShipState.Grounded)
+            {
+                m_transform.SetParent(null);
+                SetState(ECargoShipState.Launching);
+                m_groundLevel = Vector3.Distance(m_transform.position, m_orbit.GetOrbitPoint());
+                m_timer.Reset();
+                m_timer.Start();
+            }
         }
 
+        /// <summary>
+        /// Set the transform the cargo ship should rotate around
+        /// </summary>
+        /// <param name="toOrbit"></param>
         public void SetTransformToOrbit(Transform toOrbit)
         {
             m_orbit.SetTransformToOrbit(toOrbit);
