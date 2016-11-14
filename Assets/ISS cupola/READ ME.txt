@@ -1,0 +1,7 @@
+Notes :
+
+- The windows shield are animated to open. If you don't want to have them at all, you can easily delete them.
+
+- There is a basic script on the camera to orbit the view with the mouse
+
+
