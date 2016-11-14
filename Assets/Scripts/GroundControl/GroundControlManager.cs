@@ -53,6 +53,11 @@ namespace GroundControl
                 m_launchTimer.Start();
             }
         }
+
+        public Transform GetWorldCenter()
+        {
+            return transform;
+        }
     }
 }
 

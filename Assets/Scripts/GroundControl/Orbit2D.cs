@@ -43,5 +43,10 @@ namespace GroundControl
             }
             return orbitPoint;
         }
+
+        public void SetTransformToOrbit(Transform toOrbit)
+        {
+            m_transformToOrbit = toOrbit;
+        }
     }
 }

@@ -27,10 +27,16 @@ namespace GroundControl
                 cargoShip = pooledObject.GetComponent<CargoShip2D>();
                 if(cargoShip != null)
                 {
+                    // Set the transform to orbit
+                    cargoShip.SetTransformToOrbit(GroundControlManager.Instance.GetWorldCenter());
+
+                    // Position and rotate the cargo ship
                     Transform cargoShipTransform = cargoShip.transform;
                     cargoShipTransform.position = m_transform.position;
                     cargoShipTransform.rotation = m_transform.rotation;
                     cargoShipTransform.SetParent(m_groundTranform);
+
+                    // Activate the cargo ship
                     pooledObject.SetActive(true);
                 }
             }
