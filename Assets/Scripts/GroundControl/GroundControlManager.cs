@@ -14,13 +14,22 @@ namespace GroundControl
         private CargoShip2D m_shipToLaunch;
         private Timer m_launchTimer;
 
+        [SerializeField]
+        private int m_initialMoney = 10;
+
+        private GroundControlPlayer m_player;
+        private GroundControlGUI m_gui;
+
         // GroundControlManager's initialization requiers that m_cargoShipSpawner is already initialized.
         // CargoShipSpawner is initialized in its Awake. By initializing GroundControlManager in Start we 
         // ensure that the spawner is ready.
         private void Start()
         {
+            m_player = new GroundControlPlayer(m_initialMoney);
             m_launchTimer = new Timer();
             PrepareCargoShipForLaunch();
+            m_gui = GroundControlGUI.Instance;
+            m_gui.SetMoney(m_initialMoney);
         }
 
         private void Update()
@@ -70,6 +79,23 @@ namespace GroundControl
         public Transform GetWorldCenter()
         {
             return transform;
+        }
+
+        public int GetPlayerMoney()
+        {
+            return m_player.MoneyOwned();
+        }
+
+        public void ReducePlayerMoney(int amount)
+        {
+            m_player.AddMoney(-amount);
+            m_gui.SetMoney(m_player.MoneyOwned());
+        }
+
+        public void IncreacePlayerMoney(int amount)
+        {
+            m_player.AddMoney(amount);
+            m_gui.SetMoney(m_player.MoneyOwned());
         }
     }
 }
