@@ -19,6 +19,7 @@ namespace GroundControl
 
         private GroundControlPlayer m_player;
         private GroundControlGUI m_gui;
+        private CargoMenu m_cargoMenu;
 
         // GroundControlManager's initialization requiers that m_cargoShipSpawner is already initialized.
         // CargoShipSpawner is initialized in its Awake. By initializing GroundControlManager in Start we 
@@ -96,6 +97,16 @@ namespace GroundControl
         {
             m_player.AddMoney(amount);
             m_gui.SetMoney(m_player.MoneyOwned());
+        }
+
+        public void DropTile(CargoItemTile cargoTile)
+        {
+            m_gui.DropTile(cargoTile);
+        }
+
+        public void GrabTile(CargoItemTile cargoTile)
+        {
+            m_gui.GrabTile(cargoTile);
         }
     }
 }

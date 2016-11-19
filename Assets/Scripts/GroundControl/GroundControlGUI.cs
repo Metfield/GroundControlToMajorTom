@@ -2,13 +2,30 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class GroundControlGUI : Singleton<GroundControlGUI>
+namespace GroundControl
 {
-    [SerializeField]
-    private Text m_moneyText; 
-
-    public void SetMoney(int money)
+    public class GroundControlGUI : Singleton<GroundControlGUI>
     {
-        m_moneyText.text = "$ " + money;
+        [SerializeField]
+        private CargoMenu m_cargoMenu;
+
+        [SerializeField]
+        private Text m_moneyText;
+
+        public void SetMoney(int money)
+        {
+            m_moneyText.text = "$ " + money;
+        }
+
+        public void DropTile(CargoItemTile cargoTile)
+        {
+            m_cargoMenu.LoadCargo(cargoTile);
+        }
+
+        public void GrabTile(CargoItemTile cargoTile)
+        {
+            m_cargoMenu.UnloadCargo(cargoTile);
+        }
     }
 }
+

@@ -58,8 +58,7 @@ namespace GroundControl
             if (m_groundControlManager.GetPlayerMoney() >= itemCost)
             {
                 m_groundControlManager.ReducePlayerMoney(itemCost);
-                GameObject obj = Instantiate(GetTilePrefab(item), Input.mousePosition, Quaternion.identity) as GameObject;
-                obj.transform.SetParent(this.transform);
+                GameObject obj = Instantiate(GetTilePrefab(item), Input.mousePosition, Quaternion.identity,  this.transform.parent) as GameObject;
             }
         }
     }
