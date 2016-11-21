@@ -28,16 +28,6 @@ namespace GroundControl
         {
             m_moneyText.text = "$ " + money;
         }
-
-        public void DropTile(CargoItemTile cargoTile)
-        {
-           // m_cargoMenu.LoadCargo(cargoTile);
-        }
-
-        public void GrabTile(CargoItemTile cargoTile)
-        {
-            // m_cargoMenu.UnloadCargo(cargoTile);
-        }
     }
 }
 

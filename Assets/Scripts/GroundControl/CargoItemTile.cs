@@ -14,11 +14,15 @@ namespace GroundControl
         private Image m_image;
 
         public delegate void TileGrabbed(CargoItemTile itemTile);
-        public static TileGrabbed OnGrabbedEvent;
+        public static TileGrabbed GrabbedEvent;
 
         public delegate void TileDropped(CargoItemTile itemTile);
-        public static TileDropped OnDroppedEvent;
+        public static TileDropped DroppedEvent;
 
+        public delegate void ReturnedToShop(CargoItemTile itemTile);
+        public static ReturnedToShop ReturnedToShopEvent;
+
+        private CargoItemProperties m_properties;
 
         private void Awake()
         {
@@ -31,9 +35,6 @@ namespace GroundControl
         private void OnEnable()
         {
             GrabTile();
-
-            // Randomize color for debugging
-            m_image.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
         }
 
         // Update is called once per frame
@@ -43,7 +44,9 @@ namespace GroundControl
             {
                 // Position the tile as the player drags across the screen.
                 // The mouse input also works as mobile touch.
-                m_rectTransform.position = Input.mousePosition;
+
+                SetPosition(Input.mousePosition);
+
                 if (Input.GetMouseButtonUp(0))
                 {
                     DropTile();
@@ -66,9 +69,9 @@ namespace GroundControl
             m_selected = true;
             m_image.raycastTarget = false;
             m_rectTransform.SetParent(m_gui.HeldTileParent);
-            if(OnGrabbedEvent != null)
+            if(GrabbedEvent != null)
             {
-                OnGrabbedEvent(this);
+                GrabbedEvent(this);
             }
         }
 
@@ -77,9 +80,9 @@ namespace GroundControl
             m_selected = false;
             m_image.raycastTarget = true;
             m_rectTransform.SetParent(m_gui.PlacedTileParent);
-            if (OnDroppedEvent != null)
+            if (DroppedEvent != null)
             {
-                OnDroppedEvent(this);
+                DroppedEvent(this);
             }
         }
 
@@ -93,12 +96,55 @@ namespace GroundControl
 
         public void SetPosition(Vector2 position)
         {
+            m_rectTransform.position = position;
+        }
+
+        public void SetLocalPosition(Vector2 position)
+        {
             m_rectTransform.localPosition = position;
         }
 
+        public void SetRotation(Quaternion rotation)
+        {
+            m_rectTransform.rotation = rotation;
+        }
+
+        /// <summary>
+        /// The item is returned to the shop.
+        /// </summary>
+        public void ReturnToShop()
+        {
+            if(ReturnedToShopEvent != null)
+            {
+                ReturnedToShopEvent(this);
+            }
+            Remove();
+        }
+
+        /// <summary>
+        /// Item is removed from play and returns to the pool
+        /// </summary>
         public void Remove()
         {
-            Destroy(gameObject);
+            this.gameObject.SetActive(false);
+            m_properties = null;
+        }
+
+        public void SetProperties(CargoItemProperties properties)
+        {
+            m_properties = properties;
+            m_image.sprite = m_properties.sprite;
+            m_image.color = m_properties.color;
+        }
+
+        public void SetParent(RectTransform parent)
+        {
+            m_rectTransform.SetParent(parent);
+        }
+
+        public int GetItemCost()
+        {
+            return m_properties.cost;
         }
     }
 }

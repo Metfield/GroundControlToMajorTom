@@ -32,7 +32,19 @@ namespace GroundControl
             m_gui = GroundControlGUI.Instance;
             m_gui.SetMoney(m_initialMoney);
 
+            
+        }
+
+        private void OnEnable()
+        {
             CargoShop.OnBoughtEvent += ReducePlayerMoney;
+            CargoItemTile.ReturnedToShopEvent += ItemReturnedToShop;
+        }
+
+        private void OnDisable()
+        {
+            CargoShop.OnBoughtEvent -= ReducePlayerMoney;
+            CargoItemTile.ReturnedToShopEvent -= ItemReturnedToShop;
         }
 
         private void Update()
@@ -88,6 +100,11 @@ namespace GroundControl
         {
             return m_player.MoneyOwned();
         }
+        
+        public void ItemReturnedToShop(CargoItemTile itemTile)
+        {
+            IncreacePlayerMoney(itemTile.GetItemCost());
+        }
 
         public void ReducePlayerMoney(int amount)
         {
@@ -101,14 +118,14 @@ namespace GroundControl
             m_gui.SetMoney(m_player.MoneyOwned());
         }
 
-        public void DropTile(CargoItemTile cargoTile)
+        public Vector3 GetShipPosition()
         {
-            m_gui.DropTile(cargoTile);
-        }
-
-        public void GrabTile(CargoItemTile cargoTile)
-        {
-            m_gui.GrabTile(cargoTile);
+            Vector3 position = Vector3.zero;
+            if(m_shipToLaunch != null)
+            {
+                position = m_shipToLaunch.transform.position;
+            }
+            return position;
         }
     }
 }

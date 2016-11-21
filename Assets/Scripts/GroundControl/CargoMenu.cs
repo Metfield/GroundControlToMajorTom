@@ -19,24 +19,31 @@ namespace GroundControl
 
         [SerializeField]
         private Image placementMarker;
-        
+
+        [SerializeField]
+        private float m_launchAnimTime = 1.0f;
+
+        [SerializeField]
+        private float m_slideInAnimTime = 1.0f;
+
         private int m_maxCapacity;
-
         private Vector2[] m_slotPositions;
-
         private RectTransform m_rectTransform;
-
         private CargoItemTile m_heldTile;
+        private GroundControlManager m_groundControlManager;
+
+        private Vector3 m_defaultPosition;
 
         private void Awake()
         {
+            m_groundControlManager = GroundControlManager.Instance;
+
             m_maxCapacity = m_cargoSlotsX * m_cargoSlotsY;
 
             //m_slots = new CargoItemTile[m_cargoSlotsX * m_cargoSlotsY];
             m_cargoItemSlots = new CargoItemTile[m_maxCapacity];
             m_rectTransform = this.GetComponent<RectTransform>();
             
-
             // Calculate slot positions. The position is defined in the center of its width and height.
             m_slotPositions = new Vector2[m_maxCapacity];
             float slotWidth = m_rectTransform.rect.width / m_cargoSlotsX;
@@ -55,18 +62,20 @@ namespace GroundControl
             m_filledSlots = 0;
 
             m_heldTile = null;
+
+            m_defaultPosition = transform.position;
         }
 
         private void OnEnable()
         {
-            CargoItemTile.OnGrabbedEvent += TileGrabbed;
-            CargoItemTile.OnDroppedEvent += TileDropped;
+            CargoItemTile.GrabbedEvent += TileGrabbed;
+            CargoItemTile.DroppedEvent += TileDropped;
         }
 
         private void OnDisable()
         {
-            CargoItemTile.OnGrabbedEvent -= TileGrabbed;
-            CargoItemTile.OnDroppedEvent -= TileDropped;
+            CargoItemTile.GrabbedEvent -= TileGrabbed;
+            CargoItemTile.DroppedEvent -= TileDropped;
         }
 
         private void Update()
@@ -94,13 +103,13 @@ namespace GroundControl
                 // If there is already a tile in the slot it must be removed first
                 if (m_cargoItemSlots[slot] != null)
                 {
-                    m_cargoItemSlots[slot].Remove();
+                    m_cargoItemSlots[slot].ReturnToShop();
                     m_cargoItemSlots[slot] = null;
                 }
 
                 // Place the tile in the slot
                 Vector2 position = m_slotPositions[slot];
-                cargoTile.SetPosition(position);
+                cargoTile.SetLocalPosition(position);
                 m_cargoItemSlots[slot] = cargoTile;
             }
         }
@@ -156,7 +165,7 @@ namespace GroundControl
             }
             else
             {
-                itemTile.Remove();
+                itemTile.ReturnToShop();
             }
             SetPlacementMarkerActive(false);
             m_heldTile = null;
@@ -180,6 +189,63 @@ namespace GroundControl
         private void SetPlacementMarkerPosition(Vector2 position)
         {
             placementMarker.rectTransform.localPosition = position;
+        }
+
+        public void Launch()
+        {
+            StartCoroutine(LaunchRoutine());
+        }
+
+        private IEnumerator LaunchRoutine()
+        {
+            float timer = 0f;
+            float timeFactor = 1.0f / m_launchAnimTime;
+            while(timer <= m_launchAnimTime)
+            {
+                timer += Time.deltaTime;
+                float t = timer * timeFactor;
+                Vector3 shipPosition = Camera.main.WorldToScreenPoint(m_groundControlManager.GetShipPosition());
+                Vector3 nextPosition = Vector3.Lerp(m_defaultPosition, shipPosition, t);
+                Vector3 nextScale = Vector3.Lerp(Vector3.one, Vector3.zero, t);
+
+                m_rectTransform.position = nextPosition;
+                m_rectTransform.localScale = nextScale;
+
+                yield return null;
+            }
+
+            m_groundControlManager.LaunchCargoShip();
+            ClearCargo();
+            StartCoroutine(SlideInRoutine());
+        }
+
+        private IEnumerator SlideInRoutine()
+        {
+            m_rectTransform.localScale = Vector3.one;
+            Vector3 slideFrom = new Vector3(Screen.width, m_defaultPosition.y, m_defaultPosition.z);
+            m_rectTransform.position = slideFrom;
+            float timer = 0.0f;
+            float timeFactor = 1.0f / m_slideInAnimTime;
+            while (timer <= m_slideInAnimTime)
+            {
+                timer += Time.deltaTime;
+                float t = timer * timeFactor;
+                Vector3 nextPosition = Vector3.Lerp(slideFrom, m_defaultPosition, t);
+                m_rectTransform.position = nextPosition;
+                yield return null;
+            }
+        }
+
+        private void ClearCargo()
+        {
+            for(int i = 0; i < m_cargoItemSlots.Length; i++)
+            {
+                if(m_cargoItemSlots[i] != null)
+                {
+                    m_cargoItemSlots[i].Remove();
+                    m_cargoItemSlots[i] = null;
+                }
+            }
         }
     }
 }

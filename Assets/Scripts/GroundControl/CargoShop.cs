@@ -1,26 +1,33 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Util;
+using UnityEngine.UI;
+
 
 namespace GroundControl
 {
+    [Serializable]
+    public class CargoItemProperties
+    {
+        public ECargoItem item;
+        public int cost;
+        public Sprite sprite;
+        public Color color;
+    }
+
     public class CargoShop : MonoBehaviour
     {
-        [Serializable]
-        public class ShopItem
-        {
-            public ECargoItem item;
-            public int cost;
-            public GameObject tilePrefab;
-        }
+        [SerializeField]
+        private CargoItemProperties[] m_shopItems;
 
         [SerializeField]
-        private ShopItem[] m_shopItems;
+        private GameObjectPool m_itemTilePool;
 
         private GroundControlManager m_groundControlManager;
         private GroundControlGUI m_gui;
-        private Dictionary<ECargoItem, ShopItem> m_shopItemsDictionary;
+        private Dictionary<ECargoItem, CargoItemProperties> m_shopItemsDictionary;
 
         private Dictionary<string, ECargoItem> m_stringKeys;
 
@@ -30,7 +37,7 @@ namespace GroundControl
         // Use this for initialization
         void Awake()
         {
-            m_shopItemsDictionary = new Dictionary<ECargoItem, ShopItem>();
+            m_shopItemsDictionary = new Dictionary<ECargoItem, CargoItemProperties>();
             for(int i = 0; i < m_shopItems.Length; i++)
             {
                 m_shopItemsDictionary.Add(m_shopItems[i].item, m_shopItems[i]);
@@ -38,6 +45,8 @@ namespace GroundControl
             m_groundControlManager = GroundControlManager.Instance;
             m_gui = GroundControlGUI.Instance;
             m_stringKeys = EnumUtil.StringToEnum<ECargoItem>();
+
+            m_itemTilePool = GetComponent<GameObjectPool>();
         }
 
         // Update is called once per frame
@@ -50,24 +59,31 @@ namespace GroundControl
         {
             return m_shopItemsDictionary[item].cost;
         }
-
-        public GameObject GetTilePrefab(ECargoItem item)
-        {
-            return m_shopItemsDictionary[item].tilePrefab;
-        }
-
+        
         public void BuyItem(string itemToBuy)
         {
             ECargoItem item = m_stringKeys[itemToBuy.ToUpper()];
-            int itemCost = GetCost(item);
-            if (m_groundControlManager.GetPlayerMoney() >= itemCost)
+            CargoItemProperties itemProperties = m_shopItemsDictionary[item];
+            if (m_groundControlManager.GetPlayerMoney() >= itemProperties.cost)
             {
-                //m_groundControlManager.ReducePlayerMoney(itemCost);
                 if(OnBoughtEvent != null)
                 {
-                    OnBoughtEvent(itemCost);
+                    OnBoughtEvent(itemProperties.cost);
                 }
-                GameObject obj = Instantiate(GetTilePrefab(item), Input.mousePosition, Quaternion.identity,  m_gui.HeldTileParent) as GameObject;
+
+                GameObject tileObject = m_itemTilePool.GetPooledObject();
+                if(tileObject != null)
+                {
+                    CargoItemTile itemTile = tileObject.GetComponent<CargoItemTile>();
+                    if(itemTile != null)
+                    {
+                        itemTile.SetProperties(itemProperties);
+                        itemTile.SetPosition(Input.mousePosition);
+                        itemTile.SetRotation(Quaternion.identity);
+                        itemTile.SetParent(m_gui.HeldTileParent);
+                        tileObject.SetActive(true);
+                    }
+                }
             }
         }
     }
