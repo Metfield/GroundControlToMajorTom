@@ -10,19 +10,30 @@ namespace GroundControl
         private bool m_selected;
         private RectTransform m_rectTransform;
         private GroundControlManager m_groundControlManager;
+        private GroundControlGUI m_gui;
+        private Image m_image;
 
-    private void Awake()
+        public delegate void TileGrabbed(CargoItemTile itemTile);
+        public static TileGrabbed OnGrabbedEvent;
+
+        public delegate void TileDropped(CargoItemTile itemTile);
+        public static TileDropped OnDroppedEvent;
+
+
+        private void Awake()
         {
             m_rectTransform = this.GetComponent<RectTransform>();
             m_groundControlManager = GroundControlManager.Instance;
+            m_gui = GroundControlGUI.Instance;
+            m_image = this.GetComponent<Image>();
         }
 
         private void OnEnable()
         {
-            m_selected = true;
+            GrabTile();
 
             // Randomize color for debugging
-            GetComponent<Image>().color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+            m_image.color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
         }
 
         // Update is called once per frame
@@ -53,13 +64,23 @@ namespace GroundControl
         private void GrabTile()
         {
             m_selected = true;
-            m_groundControlManager.GrabTile(this);
+            m_image.raycastTarget = false;
+            m_rectTransform.SetParent(m_gui.HeldTileParent);
+            if(OnGrabbedEvent != null)
+            {
+                OnGrabbedEvent(this);
+            }
         }
 
         private void DropTile()
         {
             m_selected = false;
-            m_groundControlManager.DropTile(this);
+            m_image.raycastTarget = true;
+            m_rectTransform.SetParent(m_gui.PlacedTileParent);
+            if (OnDroppedEvent != null)
+            {
+                OnDroppedEvent(this);
+            }
         }
 
         public Rect GetScreenRect()
@@ -73,6 +94,11 @@ namespace GroundControl
         public void SetPosition(Vector2 position)
         {
             m_rectTransform.localPosition = position;
+        }
+
+        public void Remove()
+        {
+            Destroy(gameObject);
         }
     }
 }

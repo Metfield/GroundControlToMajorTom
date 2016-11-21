@@ -19,9 +19,13 @@ namespace GroundControl
         private ShopItem[] m_shopItems;
 
         private GroundControlManager m_groundControlManager;
+        private GroundControlGUI m_gui;
         private Dictionary<ECargoItem, ShopItem> m_shopItemsDictionary;
 
         private Dictionary<string, ECargoItem> m_stringKeys;
+
+        public delegate void ItemBought(int itemCost);
+        public static event ItemBought OnBoughtEvent;
         
         // Use this for initialization
         void Awake()
@@ -32,6 +36,7 @@ namespace GroundControl
                 m_shopItemsDictionary.Add(m_shopItems[i].item, m_shopItems[i]);
             }
             m_groundControlManager = GroundControlManager.Instance;
+            m_gui = GroundControlGUI.Instance;
             m_stringKeys = EnumUtil.StringToEnum<ECargoItem>();
         }
 
@@ -57,8 +62,12 @@ namespace GroundControl
             int itemCost = GetCost(item);
             if (m_groundControlManager.GetPlayerMoney() >= itemCost)
             {
-                m_groundControlManager.ReducePlayerMoney(itemCost);
-                GameObject obj = Instantiate(GetTilePrefab(item), Input.mousePosition, Quaternion.identity,  this.transform.parent) as GameObject;
+                //m_groundControlManager.ReducePlayerMoney(itemCost);
+                if(OnBoughtEvent != null)
+                {
+                    OnBoughtEvent(itemCost);
+                }
+                GameObject obj = Instantiate(GetTilePrefab(item), Input.mousePosition, Quaternion.identity,  m_gui.HeldTileParent) as GameObject;
             }
         }
     }

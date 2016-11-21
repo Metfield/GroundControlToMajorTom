@@ -31,6 +31,8 @@ namespace GroundControl
             PrepareCargoShipForLaunch();
             m_gui = GroundControlGUI.Instance;
             m_gui.SetMoney(m_initialMoney);
+
+            CargoShop.OnBoughtEvent += ReducePlayerMoney;
         }
 
         private void Update()
@@ -89,13 +91,13 @@ namespace GroundControl
 
         public void ReducePlayerMoney(int amount)
         {
-            m_player.AddMoney(-amount);
+            m_player.ReduceMoney(amount);
             m_gui.SetMoney(m_player.MoneyOwned());
         }
 
         public void IncreacePlayerMoney(int amount)
         {
-            m_player.AddMoney(amount);
+            m_player.IncreaceMoney(amount);
             m_gui.SetMoney(m_player.MoneyOwned());
         }
 

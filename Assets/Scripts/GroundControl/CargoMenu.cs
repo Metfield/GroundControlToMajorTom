@@ -17,11 +17,16 @@ namespace GroundControl
         private CargoItemTile[] m_cargoItemSlots;
         private int m_filledSlots = 0;
 
+        [SerializeField]
+        private Image placementMarker;
+        
         private int m_maxCapacity;
 
         private Vector2[] m_slotPositions;
 
         private RectTransform m_rectTransform;
+
+        private CargoItemTile m_heldTile;
 
         private void Awake()
         {
@@ -32,41 +37,71 @@ namespace GroundControl
             m_rectTransform = this.GetComponent<RectTransform>();
             
 
-            // Calculate slot positions
+            // Calculate slot positions. The position is defined in the center of its width and height.
             m_slotPositions = new Vector2[m_maxCapacity];
             float slotWidth = m_rectTransform.rect.width / m_cargoSlotsX;
             float slotHeight = m_rectTransform.rect.height / m_cargoSlotsY;
             Vector2 rectPosition = m_rectTransform.localPosition;
             for (int x = 0; x < m_cargoSlotsX; x++)
             {
-                float posX = x * slotWidth + rectPosition.x;
+                float posX = x * slotWidth + rectPosition.x + slotWidth * 0.5f;
                 for (int y = 0; y < m_cargoSlotsY; y++)
                 {
-                    float posY = y * slotHeight + rectPosition.y;
+                    float posY = y * slotHeight + rectPosition.y + slotHeight * 0.5f;
                     m_slotPositions[m_filledSlots] = new Vector2(posX, posY);
                     m_filledSlots++;
                 }
             }
             m_filledSlots = 0;
+
+            m_heldTile = null;
+        }
+
+        private void OnEnable()
+        {
+            CargoItemTile.OnGrabbedEvent += TileGrabbed;
+            CargoItemTile.OnDroppedEvent += TileDropped;
+        }
+
+        private void OnDisable()
+        {
+            CargoItemTile.OnGrabbedEvent -= TileGrabbed;
+            CargoItemTile.OnDroppedEvent -= TileDropped;
+        }
+
+        private void Update()
+        {
+            if(m_heldTile != null)
+            {
+                if(OverlapsMenu(m_heldTile))
+                {
+                    SetPlacementMarkerActive(true);
+                    SetPlacementMarkerPosition(m_slotPositions[ClosestSlot(m_heldTile.GetScreenRect().center)]);
+                }
+                else
+                {
+                    SetPlacementMarkerActive(false);
+                }
+            }
         }
 
         public void LoadCargo(CargoItemTile cargoTile)
         {
-            Rect cargoRect = cargoTile.GetScreenRect();
-            Rect screenRect = m_rectTransform.rect;
-            screenRect.x = m_rectTransform.localPosition.x;
-            screenRect.y = m_rectTransform.localPosition.y;
-            
-            if (screenRect.Overlaps(cargoRect))
+            // Place in the slot closest to the tile's center
+            int slot = ClosestSlot(cargoTile.GetScreenRect().center);
+            if (slot != -1)
             {
-                int index = GetEmptySlot();
-                Util.Log.Info("Index "+ index.ToString());
-                if (index != -1)
+                // If there is already a tile in the slot it must be removed first
+                if (m_cargoItemSlots[slot] != null)
                 {
-                    Vector2 position = m_slotPositions[index] + new Vector2(cargoRect.width * 0.5f, cargoRect.height * 0.5f);
-                    cargoTile.SetPosition(position);
-                    m_cargoItemSlots[index] = cargoTile;
+                    m_cargoItemSlots[slot].Remove();
+                    m_cargoItemSlots[slot] = null;
                 }
+
+                // Place the tile in the slot
+                Vector2 position = m_slotPositions[slot];
+                cargoTile.SetPosition(position);
+                m_cargoItemSlots[slot] = cargoTile;
             }
         }
 
@@ -89,6 +124,62 @@ namespace GroundControl
                 }
             }
             return -1;
+        }
+        
+        public int ClosestSlot(Vector2 point)
+        {
+            int slot = 0;
+            float sqrMagnitude = Vector2.SqrMagnitude(point - m_slotPositions[0]);
+            for (int index = 1; index < m_slotPositions.Length; index++)
+            {
+                float newSqrMagnitude = Vector2.SqrMagnitude(point - m_slotPositions[index]);
+                if (newSqrMagnitude <= sqrMagnitude)
+                {
+                    slot = index;
+                    sqrMagnitude = newSqrMagnitude;
+                }
+            }
+            return slot;
+        }
+
+        private void TileGrabbed(CargoItemTile itemTile)
+        {
+            m_heldTile = itemTile;
+            UnloadCargo(m_heldTile);
+        }
+
+        private void TileDropped(CargoItemTile itemTile)
+        {
+            if(OverlapsMenu(m_heldTile))
+            {
+                LoadCargo(m_heldTile);
+            }
+            else
+            {
+                itemTile.Remove();
+            }
+            SetPlacementMarkerActive(false);
+            m_heldTile = null;
+        }
+
+        private bool OverlapsMenu(CargoItemTile cargoTile)
+        {
+            // Determine if the tile is over the menu
+            Rect cargoRect = cargoTile.GetScreenRect();
+            Rect screenRect = m_rectTransform.rect;
+            screenRect.x = m_rectTransform.localPosition.x;
+            screenRect.y = m_rectTransform.localPosition.y;
+            return screenRect.Overlaps(cargoRect);
+        }
+
+        private void SetPlacementMarkerActive(bool active)
+        {
+            placementMarker.gameObject.SetActive(active);
+        }
+
+        private void SetPlacementMarkerPosition(Vector2 position)
+        {
+            placementMarker.rectTransform.localPosition = position;
         }
     }
 }
