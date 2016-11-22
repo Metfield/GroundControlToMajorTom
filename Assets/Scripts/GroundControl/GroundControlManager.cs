@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using Util;
 
 namespace GroundControl
@@ -24,11 +25,12 @@ namespace GroundControl
         [SerializeField]
         private int m_baseLaunchCost = 10;
 
+        private int m_currenLaunchCost;
+
         private float m_incomeTime;
 
         private GroundControlPlayer m_player;
         private GroundControlGUI m_gui;
-        private CargoMenu m_cargoMenu;
 
         // GroundControlManager's initialization requiers that m_cargoShipSpawner is already initialized.
         // CargoShipSpawner is initialized in its Awake. By initializing GroundControlManager in Start we 
@@ -37,23 +39,30 @@ namespace GroundControl
         {
             m_player = new GroundControlPlayer(m_initialMoney);
             m_launchTimer = new Timer();
-            PrepareCargoShipForLaunch();
+            
             m_gui = GroundControlGUI.Instance;
             m_gui.SetMoney(m_initialMoney);
 
             SetIncomeTime();
-        }
+            ResetLaunchCost();
 
+            PrepareCargoShipForLaunch();
+        }
+        
         private void OnEnable()
         {
-            CargoShop.OnBoughtEvent += ReducePlayerMoney;
-            CargoItemTile.ReturnedToShopEvent += ItemReturnedToShop;
+            CargoMenu.CargoLoadedEvent += CargoLoaded;
+            CargoMenu.CargoUnloadedEvent += CargoUnoaded;
+            //CargoShop.OnBoughtEvent += ReducePlayerMoney;
+            //CargoItemTile.ReturnedToShopEvent += ItemReturnedToShop;
         }
 
         private void OnDisable()
         {
-            CargoShop.OnBoughtEvent -= ReducePlayerMoney;
-            CargoItemTile.ReturnedToShopEvent -= ItemReturnedToShop;
+            CargoMenu.CargoLoadedEvent -= CargoLoaded;
+            CargoMenu.CargoUnloadedEvent -= CargoUnoaded;
+            //CargoShop.OnBoughtEvent -= ReducePlayerMoney;
+            //CargoItemTile.ReturnedToShopEvent -= ItemReturnedToShop;
         }
 
         private void Update()
@@ -78,8 +87,8 @@ namespace GroundControl
         {
             if (Time.time >= m_incomeTime)
             {
-                m_player.IncreaceMoney(m_income);
-                m_gui.SetMoney(m_player.MoneyOwned());
+                UpdatePlayerMoney(m_income);
+                UpdateMoneyUI(m_player.GetMoney());
                 SetIncomeTime();
             }
         }
@@ -102,33 +111,49 @@ namespace GroundControl
             else
             {
                 m_launchTimer.Stop();
+                StartCoroutine(LaunchReadyRoutine());
             }
         }
 
         public void AttemptLaunch()
         {
-            int money = m_player.MoneyOwned();
-            int launchCost = m_baseLaunchCost;
-            if (launchCost <= money)
+            if (m_shipToLaunch != null && m_currenLaunchCost <= m_player.GetMoney())
             {
-                m_player.ReduceMoney(launchCost);
-                m_gui.SetMoney(m_player.MoneyOwned());
-
                 LaunchCargoShip();
+            }
+            else
+            {
+                // TODO: Feedback that the ship can't be launched
             }
         }
 
         /// <summary>
         /// Launch a cargo ship if there is one ready.
         /// </summary>
-        public void LaunchCargoShip()
+        private void LaunchCargoShip()
         {
-            if (m_shipToLaunch != null)
-            {
-                m_shipToLaunch.Launch();
-                m_shipToLaunch = null;
-                m_launchTimer.Start();
-            }
+            StartCoroutine(LaunchRoutine());
+        }
+
+        private IEnumerator LaunchReadyRoutine()
+        {
+            yield return StartCoroutine(m_gui.SlideInCargoMenuRoutine());
+            m_gui.SetLaunchButtonInteractable(true);
+        }
+
+        private IEnumerator LaunchRoutine()
+        {
+            m_gui.SetLaunchButtonInteractable(false);
+
+            UpdatePlayerMoney(-m_currenLaunchCost);
+            UpdateMoneyUI(m_player.GetMoney());
+            ResetLaunchCost();
+
+            yield return StartCoroutine(m_gui.LaunchRoutine());
+
+            m_shipToLaunch.Launch();
+            m_shipToLaunch = null;
+            m_launchTimer.Start();
         }
 
         /// <summary>
@@ -142,26 +167,43 @@ namespace GroundControl
 
         public int GetPlayerMoney()
         {
-            return m_player.MoneyOwned();
+            return m_player.GetMoney();
         }
-
-        public void ItemReturnedToShop(CargoItemTile itemTile)
+        
+        private void CargoLoaded(CargoItemProperties itemProperties)
         {
-            IncreacePlayerMoney(itemTile.GetItemCost());
+            // Increace the cost for launching
+            UpdateLaunchCost(itemProperties.cost);
         }
 
-        public void ReducePlayerMoney(int amount)
+        private void CargoUnoaded(CargoItemProperties itemProperties)
         {
-            m_player.ReduceMoney(amount);
-            m_gui.SetMoney(m_player.MoneyOwned());
+            // Decrease the cost for launching
+            UpdateLaunchCost(-itemProperties.cost);
         }
 
-        public void IncreacePlayerMoney(int amount)
+        private void ResetLaunchCost()
         {
-            m_player.IncreaceMoney(amount);
-            m_gui.SetMoney(m_player.MoneyOwned());
+            m_currenLaunchCost = m_baseLaunchCost;
+            m_gui.SetLaunchCost(m_currenLaunchCost);
         }
 
+        public void UpdateLaunchCost(int amount)
+        {
+            m_currenLaunchCost = Mathf.Max(m_baseLaunchCost, m_currenLaunchCost + amount);
+            m_gui.SetLaunchCost(m_currenLaunchCost);
+        }
+
+        public void UpdatePlayerMoney(int amount)
+        {
+            m_player.UpdateMoney(amount);
+        }
+
+        public void UpdateMoneyUI(int money)
+        {
+            m_gui.SetMoney(money);
+        }
+        
         public Vector3 GetShipPosition()
         {
             Vector3 position = Vector3.zero;

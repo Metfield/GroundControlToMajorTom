@@ -19,8 +19,8 @@ namespace GroundControl
         public delegate void TileDropped(CargoItemTile itemTile);
         public static TileDropped DroppedEvent;
 
-        public delegate void ReturnedToShop(CargoItemTile itemTile);
-        public static ReturnedToShop ReturnedToShopEvent;
+        /*public delegate void ReturnedToShop(CargoItemTile itemTile);
+        public static ReturnedToShop ReturnedToShopEvent;*/
 
         private CargoItemProperties m_properties;
 
@@ -114,10 +114,6 @@ namespace GroundControl
         /// </summary>
         public void ReturnToShop()
         {
-            if(ReturnedToShopEvent != null)
-            {
-                ReturnedToShopEvent(this);
-            }
             Remove();
         }
 
@@ -145,6 +141,11 @@ namespace GroundControl
         public int GetItemCost()
         {
             return m_properties.cost;
+        }
+
+        public CargoItemProperties GetProperties()
+        {
+            return m_properties;
         }
     }
 }

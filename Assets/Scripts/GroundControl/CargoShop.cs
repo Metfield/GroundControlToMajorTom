@@ -8,15 +8,6 @@ using UnityEngine.UI;
 
 namespace GroundControl
 {
-    [Serializable]
-    public class CargoItemProperties
-    {
-        public ECargoItem item;
-        public int cost;
-        public Sprite sprite;
-        public Color color;
-    }
-
     public class CargoShop : MonoBehaviour
     {
         [SerializeField]
@@ -30,9 +21,6 @@ namespace GroundControl
         private Dictionary<ECargoItem, CargoItemProperties> m_shopItemsDictionary;
 
         private Dictionary<string, ECargoItem> m_stringKeys;
-
-        public delegate void ItemBought(int itemCost);
-        public static event ItemBought OnBoughtEvent;
         
         // Use this for initialization
         void Awake()
@@ -64,25 +52,18 @@ namespace GroundControl
         {
             ECargoItem item = m_stringKeys[itemToBuy.ToUpper()];
             CargoItemProperties itemProperties = m_shopItemsDictionary[item];
-            if (m_groundControlManager.GetPlayerMoney() >= itemProperties.cost)
-            {
-                if(OnBoughtEvent != null)
-                {
-                    OnBoughtEvent(itemProperties.cost);
-                }
 
-                GameObject tileObject = m_itemTilePool.GetPooledObject();
-                if(tileObject != null)
+            GameObject tileObject = m_itemTilePool.GetPooledObject();
+            if(tileObject != null)
+            {
+                CargoItemTile itemTile = tileObject.GetComponent<CargoItemTile>();
+                if(itemTile != null)
                 {
-                    CargoItemTile itemTile = tileObject.GetComponent<CargoItemTile>();
-                    if(itemTile != null)
-                    {
-                        itemTile.SetProperties(itemProperties);
-                        itemTile.SetPosition(Input.mousePosition);
-                        itemTile.SetRotation(Quaternion.identity);
-                        itemTile.SetParent(m_gui.HeldTileParent);
-                        tileObject.SetActive(true);
-                    }
+                    itemTile.SetProperties(itemProperties);
+                    itemTile.SetPosition(Input.mousePosition);
+                    itemTile.SetRotation(Quaternion.identity);
+                    itemTile.SetParent(m_gui.HeldTileParent);
+                    tileObject.SetActive(true);
                 }
             }
         }

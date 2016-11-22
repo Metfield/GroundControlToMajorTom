@@ -34,6 +34,12 @@ namespace GroundControl
 
         public Vector3 m_defaultPosition;
 
+        public delegate void CargoLoaded(CargoItemProperties itemProperties);
+        public static event CargoLoaded CargoLoadedEvent;
+
+        public delegate void CargoUnloaded(CargoItemProperties itemProperties);
+        public static event CargoUnloaded CargoUnloadedEvent;
+
         private void Awake()
         {
             m_groundControlManager = GroundControlManager.Instance;
@@ -111,6 +117,11 @@ namespace GroundControl
                 Vector2 position = m_slotPositions[slot];
                 cargoTile.SetLocalPosition(position);
                 m_cargoItemSlots[slot] = cargoTile;
+
+                // Notify that cargo was loaded
+                if(CargoLoadedEvent != null) {
+                    CargoLoadedEvent(cargoTile.GetProperties());
+                }
             }
         }
 
@@ -119,6 +130,9 @@ namespace GroundControl
             int index = Array.FindIndex<CargoItemTile>(m_cargoItemSlots, c => (c == cargoTile));
             if(index != -1)
             {
+                if(CargoUnloadedEvent != null) {
+                    CargoUnloadedEvent(m_cargoItemSlots[index].GetProperties());
+                }
                 m_cargoItemSlots[index] = null;
             }
         }
@@ -191,12 +205,12 @@ namespace GroundControl
             placementMarker.rectTransform.localPosition = position;
         }
 
-        public void Launch()
+        /*public void Launch()
         {
             StartCoroutine(LaunchRoutine());
-        }
+        }*/
 
-        private IEnumerator LaunchRoutine()
+        public IEnumerator LaunchRoutine()
         {
             float timer = 0f;
             float timeFactor = 1.0f / m_launchAnimTime;
@@ -215,13 +229,15 @@ namespace GroundControl
                 yield return null;
             }
 
-            m_groundControlManager.LaunchCargoShip();
-            ClearCargo();
-            StartCoroutine(SlideInRoutine());
+            //m_groundControlManager.LaunchCargoShip();
+            //ClearCargo();
+            //StartCoroutine(SlideInRoutine());
         }
 
-        private IEnumerator SlideInRoutine()
+        public IEnumerator SlideInRoutine()
         {
+            ClearCargo();
+
             m_rectTransform.localScale = Vector3.one;
             Vector3 slideFrom = new Vector3(Screen.width, m_defaultPosition.y, m_defaultPosition.z);
             m_rectTransform.position = slideFrom;

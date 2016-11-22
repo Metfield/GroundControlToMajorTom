@@ -11,19 +11,14 @@ namespace GroundControl
             this.money = money;
         }
 
-        public int MoneyOwned()
+        public int GetMoney()
         {
             return money;
         }
 
-        public void IncreaceMoney(int amount)
+        public void UpdateMoney(int amount)
         {
             money = Mathf.Max(0, money + amount);
-        }
-
-        public void ReduceMoney(int amount)
-        {
-            money = Mathf.Max(0, money - amount);
         }
     }
 }
