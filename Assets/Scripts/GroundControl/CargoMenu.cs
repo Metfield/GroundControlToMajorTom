@@ -32,7 +32,7 @@ namespace GroundControl
         private CargoItemTile m_heldTile;
         private GroundControlManager m_groundControlManager;
 
-        private Vector3 m_defaultPosition;
+        public Vector3 m_defaultPosition;
 
         private void Awake()
         {
@@ -63,7 +63,7 @@ namespace GroundControl
 
             m_heldTile = null;
 
-            m_defaultPosition = transform.position;
+            m_defaultPosition = m_rectTransform.localPosition;
         }
 
         private void OnEnable()
@@ -200,12 +200,13 @@ namespace GroundControl
         {
             float timer = 0f;
             float timeFactor = 1.0f / m_launchAnimTime;
+            Vector3 startPosition = m_rectTransform.position;
             while(timer <= m_launchAnimTime)
             {
                 timer += Time.deltaTime;
                 float t = timer * timeFactor;
                 Vector3 shipPosition = Camera.main.WorldToScreenPoint(m_groundControlManager.GetShipPosition());
-                Vector3 nextPosition = Vector3.Lerp(m_defaultPosition, shipPosition, t);
+                Vector3 nextPosition = Vector3.Lerp(startPosition, shipPosition, t);
                 Vector3 nextScale = Vector3.Lerp(Vector3.one, Vector3.zero, t);
 
                 m_rectTransform.position = nextPosition;
@@ -231,7 +232,7 @@ namespace GroundControl
                 timer += Time.deltaTime;
                 float t = timer * timeFactor;
                 Vector3 nextPosition = Vector3.Lerp(slideFrom, m_defaultPosition, t);
-                m_rectTransform.position = nextPosition;
+                m_rectTransform.localPosition = nextPosition;
                 yield return null;
             }
         }
