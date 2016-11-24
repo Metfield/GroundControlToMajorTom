@@ -37,12 +37,6 @@ namespace GroundControl
             m_itemTilePool = GetComponent<GameObjectPool>();
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
         public int GetCost(ECargoItem item)
         {
             return m_shopItemsDictionary[item].cost;

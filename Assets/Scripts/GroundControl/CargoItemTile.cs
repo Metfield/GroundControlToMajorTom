@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 namespace GroundControl
 {
-    public class CargoItemTile : EventTrigger
+    public class CargoItemTile : MonoBehaviour
     {
+        [SerializeField]
+        private Vector3 m_dragOffset;
+
         private bool m_selected;
         private RectTransform m_rectTransform;
         private GroundControlManager m_groundControlManager;
@@ -18,10 +20,7 @@ namespace GroundControl
 
         public delegate void TileDropped(CargoItemTile itemTile);
         public static TileDropped DroppedEvent;
-
-        /*public delegate void ReturnedToShop(CargoItemTile itemTile);
-        public static ReturnedToShop ReturnedToShopEvent;*/
-
+        
         private CargoItemProperties m_properties;
 
         private void Awake()
@@ -45,7 +44,7 @@ namespace GroundControl
                 // Position the tile as the player drags across the screen.
                 // The mouse input also works as mobile touch.
 
-                SetPosition(Input.mousePosition);
+                SetPosition(Input.mousePosition + m_dragOffset);
 
                 if (Input.GetMouseButtonUp(0))
                 {
@@ -53,18 +52,8 @@ namespace GroundControl
                 }
             }
         }
-
-        public override void OnPointerDown(PointerEventData eventData)
-        {
-            GrabTile();
-        }
-
-        public override void OnPointerUp(PointerEventData eventData)
-        {
-            DropTile();
-        }
-
-        private void GrabTile()
+        
+        public void GrabTile()
         {
             m_selected = true;
             m_image.raycastTarget = false;
@@ -75,7 +64,7 @@ namespace GroundControl
             }
         }
 
-        private void DropTile()
+        public void DropTile()
         {
             m_selected = false;
             m_image.raycastTarget = true;
