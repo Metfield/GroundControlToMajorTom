@@ -78,6 +78,8 @@ public class CargoShuttle : MonoBehaviour
     const int x_offset = 180;
     const int y_offset = 80;
 
+    const int raise_above_arm_base = 50;
+
     public void SpawnShuttleInScene(Vector3 origin, float offset, bool isWithinReach)
     {
         offset = (Random.value * 2) - 1;
@@ -89,13 +91,13 @@ public class CargoShuttle : MonoBehaviour
 
         // Move the targets location based on launch accuracy
         Vector3 target = canadarm.transform.position;
-        target.x = target.x + (offset * x_offset);
-        target.y = target.y + (offset * y_offset);
+        target.x += (offset * x_offset);
+        target.y += raise_above_arm_base + ((offset + 0.8f) * y_offset);
 
         // Get normalized velocity
         velocity = -(transform.position - target).normalized;
 
         // Ignore the height component
-        velocity.y = 0.0f;
+        //velocity.y = 0.0f;
     }
 }
