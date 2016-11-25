@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
 {
     // Singleton instance
     public static GameManager instance = null;
+    CargoShuttleSpawner cargoShuttleSpawner;
 
     void Awake()
     {
@@ -22,15 +23,16 @@ public class GameManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-	    
+        // Set reference to class for commodity
+        cargoShuttleSpawner = CargoShuttleSpawner.instance;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        GameObject bnlah = CargoShuttleSpawner.instance.GetObjectFromPool();
-        bnlah.SetActive(true);
-
-       // cargoShuttlePool.GetPooledObject().SetActive(true);
-    }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true);
+        }
+    }   
 }

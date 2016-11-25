@@ -23,12 +23,32 @@ public class CargoShuttleSpawner : MonoBehaviour
         }
     }
 
-    public void SpawnCargoShuttle(bool isBeyondReach, float offset)
+    /// <summary>
+    /// Spawns cargo shuttle with a slight offset depending on mission control's
+    /// launch success. 
+    /// </summary>
+    /// <param name="armBaseOffset: Position offset relative to Canadarm's base"></param>
+    /// <param name="isWithinReach: Can the player even grab it?"></param>
+    public bool SpawnCargoShuttle(float armBaseOffset, bool isWithinReach)
     {
-        //GameObject newCargoShuttle = Instantiate()
+        GameObject cargoShuttleGameObject =  GetObjectFromPool();
+
+        // Object pool is empty
+        if(cargoShuttleGameObject == null)
+        {
+            return false;
+        }
+
+        // Get the object's script
+        CargoShuttle cargoShuttleClassObject = cargoShuttleGameObject.GetComponent<CargoShuttle>();
+
+        // Call the spawning method in the object along with the related data
+        cargoShuttleClassObject.SpawnShuttleInScene(transform.position, armBaseOffset, isWithinReach);        
+        return true;
     }
 
-    public GameObject GetObjectFromPool()
+    // Gets object from pool -duh
+    private GameObject GetObjectFromPool()
     {
         return cargoShuttlePool.GetPooledObject();
     }
