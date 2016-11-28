@@ -26,15 +26,9 @@ public class GrappleFixture : MonoBehaviour
         if(other.CompareTag("CanadarmGrappler"))
         {
             // Tell Canadarm that it's touching me
-            SetCanadarmContact(true);            
+            SetCanadarmContact(transform.parent.gameObject);            
         }        
-    }
-
-    // Something is still hitting the grappler fixture
-    void OnTriggerStay(Collider other)
-    {
-
-    }
+    }      
 
     // Stopped touching the collider
     void OnTriggerExit(Collider other)
@@ -43,12 +37,17 @@ public class GrappleFixture : MonoBehaviour
         if (other.CompareTag("CanadarmGrappler"))
         {
             // Goodbye Canadarm :'(
-            SetCanadarmContact(false);
+            ClearCanadarmContact();
         }
     }
 
-    void SetCanadarmContact(bool value)
+    void SetCanadarmContact(GameObject shuttle)
     {
-        canadarmObject.SendMessage("SetGrapplerFixtureContact", value);        
+        canadarmObject.SendMessage("SetGrapplerFixtureContact", shuttle);        
+    }
+
+    void ClearCanadarmContact()
+    {
+        canadarmObject.SendMessage("ClearGrapplerFixtureContact");
     }
 }

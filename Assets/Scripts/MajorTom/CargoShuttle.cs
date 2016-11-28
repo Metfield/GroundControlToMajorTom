@@ -18,6 +18,10 @@ public class CargoShuttle : MonoBehaviour
     // Shuttle's velocity
     private Vector3 velocity;
 
+    [SerializeField]
+    // Shuttle's isolated speed
+    private float shuttleSpeed;
+
     // Spawning poing of the shuttle
     private Vector3 origin;
 
@@ -48,6 +52,25 @@ public class CargoShuttle : MonoBehaviour
     // True when shuttle was successfully docked
     private bool isDocked;
 
+    // Handles relative speed
+    [SerializeField]
+    private AnimationCurve speedCurve;
+
+    // [0, 1] Used to map speed according to speed curve
+    // 0: Origin
+    // 0.5: ISS
+    // 1: Past ISS
+    private float normalizedTrajectoryStep;
+
+    // The distance between the origin point and the point past the ISS
+    private float trajectoryLength;
+
+    // Needed to wait for coroutine
+    private bool waitingForCoroutine;
+
+    // Goodbye shuttle!
+    private bool isShuttleReturningToEarth;
+
     // Use this for initialization
     void Awake ()
     {
@@ -65,47 +88,103 @@ public class CargoShuttle : MonoBehaviour
         isGrappled = false;
         isDocking = false;
         isDocked = false;
+        waitingForCoroutine = false;
 
         // Interpolation target rotation
         targetDockRotation = Quaternion.Euler(0, 90, 0);
     }
-	
-	// Update is called once per frame
-	void Update ()
+    
+    // Update is called once per frame
+    void Update ()
     {
-        // Shuttle is either flying freely or being grappled
-        if (!isDocking)
+        // Shuttle is not docked, and therefore should behave normally
+        if (!isDocked)
         {
-            // Do if is being held by canadarm grappler
-            if (isGrappled)
+            // Shuttle is either flying freely or being grappled
+            if (!isDocking)
             {
-                Debug.Log("AAGH I'M BEING GRAPPLED HELP!");
-                transform.parent = canadarmGrappler.transform;
-                cargoRigidBody.isKinematic = true;
+                // Do if is being held by canadarm grappler
+                if (isGrappled)
+                {
+                    transform.parent = canadarmGrappler.transform;
+                    cargoRigidBody.isKinematic = true;
+                }
+                else
+                {
+                    cargoRigidBody.isKinematic = false;
+                    transform.parent = null;
+
+                    // Get normalized value for curve 
+                    normalizedTrajectoryStep = (transform.position.z / trajectoryLength) + 0.5f;
+
+                    if(normalizedTrajectoryStep >= 1)
+                    {
+                        // It's too late... kill it!
+                        gameObject.SetActive(false);
+                    }
+
+                    // Accelerate according to curve
+                    cargoRigidBody.velocity = (velocity * shuttleSpeed * speedCurve.Evaluate(normalizedTrajectoryStep));
+
+                    // Handle rotation relative to canadarm
+                    Vector3 dRot = canadarm.transform.position - transform.position;
+                    dRot.x = dRot.z = 0.0f;
+                    transform.LookAt(canadarm.transform.position - dRot);
+                }
             }
+            // Shuttle is being docked
             else
             {
-                Debug.Log("i'M AN ORPHAN :(!");
-                cargoRigidBody.isKinematic = false;
-                transform.parent = null;
+                // Check if we still need to interpolate            
+                if (!Vector3.Equals(transform.position, targetDockPösition) && !Quaternion.Equals(transform.rotation, targetDockRotation))
+                {
+                    RunDockingInterpolationAnimation();
+                }
+                else
+                {
+                    isDocking = false;
+                    isDocked = true;
+                }
             }
-
-            cargoRigidBody.velocity = (velocity * 100);
         }
-        // Shuttle is being docked
+        // Shuttle is docked
         else
         {
-            // Check if we still need to interpolate            
-            if (!Vector3.Equals(transform.position, targetDockPösition) && !Quaternion.Equals(transform.rotation, targetDockRotation))
+            if (!waitingForCoroutine)
             {
-                RunDockingInterpolationAnimation();
+                StartCoroutine("SitAndChill");
+                waitingForCoroutine = true;
             }
             else
             {
-                isDocking = false;
-                isDocked = true;
+                // Send it back to earth!
+                if(isShuttleReturningToEarth == true)
+                {                    
+                    cargoRigidBody.isKinematic = false;
+                    cargoRigidBody.AddForce(0, 30, 0);
+                    transform.Rotate(0, 0.5f, 0);
+
+                    // Disable collisions
+                    cargoRigidBody.detectCollisions = false;
+
+                    // Disable shuttle after a few seconds
+                    StartCoroutine("DisableAfterSecs");
+                }
             }
         }
+    }
+
+    IEnumerator DisableAfterSecs()
+    {
+        yield return new WaitForSeconds(8);
+        isShuttleReturningToEarth = false;
+        gameObject.SetActive(false);
+    }
+
+    IEnumerator SitAndChill()
+    {        
+        yield return new WaitForSeconds(5);
+        isShuttleReturningToEarth = true;
     }
     
     private float rotationTimer = 0.0f;
@@ -127,14 +206,19 @@ public class CargoShuttle : MonoBehaviour
         transform.rotation = Quaternion.Lerp(initialInterpolationRotation, targetDockRotation, rotationTimer / dockingRotationDurationSecs);
     }
 
-    void SetIsGrappled(bool value)
+    public void SetIsGrappled(bool value)
     {        
         isGrappled = value;
     }
 
     void OnEnable()
     {
+        // Calculate distance to ISS and duplicate it
+        trajectoryLength = (canadarm.transform.position.z - transform.position.z) * 2;
 
+        // Re-enable collisions
+        cargoRigidBody.detectCollisions = true;
+        cargoRigidBody.isKinematic = true;
     }
 
     void OnDisable()
@@ -143,18 +227,17 @@ public class CargoShuttle : MonoBehaviour
         transform.parent = null;
         isDocking = false;
         isDocked = false;
+        waitingForCoroutine = false;
     }
 
-    private const int x_offset = 180;
-    private const int y_offset = 80;
+    private const int x_offset = 160;
+    private const int y_offset = 60;
 
     private const int raise_above_arm_base = 50;
 
     public void SpawnShuttleInScene(Vector3 origin, float offset, bool isWithinReach)
     {
         offset = (Random.value * 2) - 1;
-
-        gameObject.SetActive(true);
 
         // Set position to spawn point's origin
         transform.position = origin;        
@@ -166,6 +249,9 @@ public class CargoShuttle : MonoBehaviour
 
         // Get normalized velocity
         velocity = -(transform.position - target).normalized;
+      
+        // Finally enable the shuttle
+        gameObject.SetActive(true);
     }
 
     private const int raise_above_dock_station = 35;

@@ -51,6 +51,7 @@ public class Canadarm : MonoBehaviour
     private bool grapplerFixtureContact;
 
     // Holds the currently active Cargo Shuttle
+    // Initially null, sets referenced to grappled shuttle
     GameObject cargoShuttle;
 
     // Use this for initialization
@@ -67,9 +68,6 @@ public class Canadarm : MonoBehaviour
         // Set variables
         grapplerFixtureContact = false;
         isTriggerPressed = false;
-
-        // BOGUS!! DEMO PURPOSE!
-        cargoShuttle = GameObject.FindGameObjectWithTag("CargoShuttle");
     }
 	
     void FixedUpdate()
@@ -104,19 +102,22 @@ public class Canadarm : MonoBehaviour
         // Stop object if there is no input 
         ClearBouncing();
 
-        if (grapplerFixtureContact)
+        if (cargoShuttle != null)
         {
-            if(wasTriggerDown)
+            if (grapplerFixtureContact)
             {
-                cargoShuttle.SendMessage("SetIsGrappled", true);
-                wasTriggerDown = false;
-            }            
-        }
+                if (wasTriggerDown)
+                {
+                    cargoShuttle.SendMessage("SetIsGrappled", true);
+                    wasTriggerDown = false;
+                }
+            }
 
-        if (wasTriggerLift)
-        {            
-            cargoShuttle.SendMessage("SetIsGrappled", false);
-            wasTriggerLift = false;
+            if (wasTriggerLift)
+            {
+                cargoShuttle.SendMessage("SetIsGrappled", false);
+                wasTriggerLift = false;
+            }
         }
     }
 
@@ -156,8 +157,16 @@ public class Canadarm : MonoBehaviour
 
     // Callback method for message passing
     // This is called by GrappleFixture.cs
-    void SetGrapplerFixtureContact(bool value)
-    {        
-        grapplerFixtureContact = value;
+    public void SetGrapplerFixtureContact(GameObject shuttle)
+    {
+        // Set reference to the grabbed shuttle
+        cargoShuttle = shuttle;
+        grapplerFixtureContact = true;        
+    }
+
+    void ClearGrapplerFixtureContact()
+    {
+        grapplerFixtureContact = false;
+        cargoShuttle = null;
     }
 }
