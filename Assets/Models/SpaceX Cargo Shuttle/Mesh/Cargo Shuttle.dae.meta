@@ -1,0 +1,1127 @@
+fileFormatVersion: 2
+guid: eb414f93f72fded448692a0b43f3d811
+timeCreated: 1479724079
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: ID1010
+    100002: ID1016
+    100004: ID103
+    100006: ID1039
+    100008: ID1063
+    100010: ID1069
+    100012: ID1077
+    100014: ID1081
+    100016: ID1092
+    100018: ID1100
+    100020: ID1108
+    100022: ID1112
+    100024: ID1125
+    100026: ID1131
+    100028: ID1139
+    100030: ID1143
+    100032: ID1156
+    100034: ID116
+    100036: ID1162
+    100038: ID1170
+    100040: ID1174
+    100042: ID1200
+    100044: ID1206
+    100046: ID1219
+    100048: ID122
+    100050: ID1225
+    100052: ID1267
+    100054: ID1273
+    100056: ID1286
+    100058: ID1292
+    100060: ID130
+    100062: ID1334
+    100064: ID134
+    100066: ID1340
+    100068: ID1353
+    100070: ID1359
+    100072: ID1400
+    100074: ID1406
+    100076: ID1412
+    100078: ID1418
+    100080: ID1424
+    100082: ID1430
+    100084: ID164
+    100086: ID170
+    100088: ID183
+    100090: ID189
+    100092: ID21
+    100094: ID231
+    100096: ID237
+    100098: ID250
+    100100: ID256
+    100102: ID29
+    100104: ID298
+    100106: ID304
+    100108: ID317
+    100110: ID323
+    100112: ID37
+    100114: ID370
+    100116: ID376
+    100118: ID382
+    100120: ID388
+    100122: ID394
+    100124: ID400
+    100126: ID41
+    100128: ID418
+    100130: ID434
+    100132: ID457
+    100134: ID472
+    100136: ID52
+    100138: ID60
+    100140: ID68
+    100142: ID709
+    100144: ID72
+    100146: ID728
+    100148: ID734
+    100150: ID740
+    100152: ID746
+    100154: ID752
+    100156: ID758
+    100158: ID766
+    100160: ID772
+    100162: ID778
+    100164: ID784
+    100166: ID790
+    100168: ID796
+    100170: ID802
+    100172: ID808
+    100174: ID814
+    100176: ID820
+    100178: ID826
+    100180: ID832
+    100182: ID838
+    100184: ID844
+    100186: ID85
+    100188: ID850
+    100190: ID856
+    100192: ID862
+    100194: ID868
+    100196: ID874
+    100198: ID880
+    100200: ID886
+    100202: ID892
+    100204: ID898
+    100206: ID904
+    100208: ID91
+    100210: ID910
+    100212: ID916
+    100214: ID922
+    100216: ID928
+    100218: ID934
+    100220: ID940
+    100222: ID946
+    100224: ID976
+    100226: ID99
+    100228: ID997
+    100230: instance_0
+    100232: instance_1
+    100234: instance_10
+    100236: instance_10 1
+    100238: instance_10 2
+    100240: instance_10 3
+    100242: instance_10 4
+    100244: instance_10 5
+    100246: instance_11
+    100248: instance_11 1
+    100250: instance_11 2
+    100252: instance_11 3
+    100254: instance_11 4
+    100256: instance_11 5
+    100258: instance_12
+    100260: instance_12 1
+    100262: instance_12 2
+    100264: instance_12 3
+    100266: instance_12 4
+    100268: instance_12 5
+    100270: instance_13
+    100272: instance_13 1
+    100274: instance_13 2
+    100276: instance_13 3
+    100278: instance_13 4
+    100280: instance_13 5
+    100282: instance_14
+    100284: instance_14 1
+    100286: instance_15
+    100288: instance_15 1
+    100290: instance_16
+    100292: instance_16 1
+    100294: instance_17
+    100296: instance_17 1
+    100298: instance_18
+    100300: instance_18 1
+    100302: instance_19
+    100304: instance_2
+    100306: instance_2 1
+    100308: instance_20
+    100310: instance_21
+    100312: instance_22
+    100314: instance_23
+    100316: instance_24
+    100318: instance_25
+    100320: instance_26
+    100322: instance_27
+    100324: instance_28
+    100326: instance_29
+    100328: instance_3
+    100330: instance_3 1
+    100332: instance_30
+    100334: instance_30 1
+    100336: instance_30 10
+    100338: instance_30 11
+    100340: instance_30 12
+    100342: instance_30 13
+    100344: instance_30 14
+    100346: instance_30 15
+    100348: instance_30 2
+    100350: instance_30 3
+    100352: instance_30 4
+    100354: instance_30 5
+    100356: instance_30 6
+    100358: instance_30 7
+    100360: instance_30 8
+    100362: instance_30 9
+    100364: instance_31
+    100366: instance_32
+    100368: instance_33
+    100370: instance_34
+    100372: instance_35
+    100374: instance_36
+    100376: instance_37
+    100378: instance_38
+    100380: instance_39
+    100382: instance_4
+    100384: instance_4 1
+    100386: instance_40
+    100388: instance_41
+    100390: instance_42
+    100392: instance_43
+    100394: instance_44
+    100396: instance_45
+    100398: instance_46
+    100400: instance_47
+    100402: instance_48
+    100404: instance_49
+    100406: instance_5
+    100408: instance_5 1
+    100410: instance_50
+    100412: instance_50 1
+    100414: instance_51
+    100416: instance_51 1
+    100418: instance_52
+    100420: instance_53
+    100422: instance_54
+    100424: instance_55
+    100426: instance_56
+    100428: instance_57
+    100430: instance_6
+    100432: instance_6 1
+    100434: instance_7
+    100436: instance_7 1
+    100438: instance_8
+    100440: instance_8 1
+    100442: instance_8 2
+    100444: instance_8 3
+    100446: instance_8 4
+    100448: instance_8 5
+    100450: instance_9
+    100452: instance_9 1
+    100454: instance_9 2
+    100456: instance_9 3
+    100458: instance_9 4
+    100460: instance_9 5
+    100462: //RootNode
+    400000: ID1010
+    400002: ID1016
+    400004: ID103
+    400006: ID1039
+    400008: ID1063
+    400010: ID1069
+    400012: ID1077
+    400014: ID1081
+    400016: ID1092
+    400018: ID1100
+    400020: ID1108
+    400022: ID1112
+    400024: ID1125
+    400026: ID1131
+    400028: ID1139
+    400030: ID1143
+    400032: ID1156
+    400034: ID116
+    400036: ID1162
+    400038: ID1170
+    400040: ID1174
+    400042: ID1200
+    400044: ID1206
+    400046: ID1219
+    400048: ID122
+    400050: ID1225
+    400052: ID1267
+    400054: ID1273
+    400056: ID1286
+    400058: ID1292
+    400060: ID130
+    400062: ID1334
+    400064: ID134
+    400066: ID1340
+    400068: ID1353
+    400070: ID1359
+    400072: ID1400
+    400074: ID1406
+    400076: ID1412
+    400078: ID1418
+    400080: ID1424
+    400082: ID1430
+    400084: ID164
+    400086: ID170
+    400088: ID183
+    400090: ID189
+    400092: ID21
+    400094: ID231
+    400096: ID237
+    400098: ID250
+    400100: ID256
+    400102: ID29
+    400104: ID298
+    400106: ID304
+    400108: ID317
+    400110: ID323
+    400112: ID37
+    400114: ID370
+    400116: ID376
+    400118: ID382
+    400120: ID388
+    400122: ID394
+    400124: ID400
+    400126: ID41
+    400128: ID418
+    400130: ID434
+    400132: ID457
+    400134: ID472
+    400136: ID52
+    400138: ID60
+    400140: ID68
+    400142: ID709
+    400144: ID72
+    400146: ID728
+    400148: ID734
+    400150: ID740
+    400152: ID746
+    400154: ID752
+    400156: ID758
+    400158: ID766
+    400160: ID772
+    400162: ID778
+    400164: ID784
+    400166: ID790
+    400168: ID796
+    400170: ID802
+    400172: ID808
+    400174: ID814
+    400176: ID820
+    400178: ID826
+    400180: ID832
+    400182: ID838
+    400184: ID844
+    400186: ID85
+    400188: ID850
+    400190: ID856
+    400192: ID862
+    400194: ID868
+    400196: ID874
+    400198: ID880
+    400200: ID886
+    400202: ID892
+    400204: ID898
+    400206: ID904
+    400208: ID91
+    400210: ID910
+    400212: ID916
+    400214: ID922
+    400216: ID928
+    400218: ID934
+    400220: ID940
+    400222: ID946
+    400224: ID976
+    400226: ID99
+    400228: ID997
+    400230: instance_0
+    400232: instance_1
+    400234: instance_10
+    400236: instance_10 1
+    400238: instance_10 2
+    400240: instance_10 3
+    400242: instance_10 4
+    400244: instance_10 5
+    400246: instance_11
+    400248: instance_11 1
+    400250: instance_11 2
+    400252: instance_11 3
+    400254: instance_11 4
+    400256: instance_11 5
+    400258: instance_12
+    400260: instance_12 1
+    400262: instance_12 2
+    400264: instance_12 3
+    400266: instance_12 4
+    400268: instance_12 5
+    400270: instance_13
+    400272: instance_13 1
+    400274: instance_13 2
+    400276: instance_13 3
+    400278: instance_13 4
+    400280: instance_13 5
+    400282: instance_14
+    400284: instance_14 1
+    400286: instance_15
+    400288: instance_15 1
+    400290: instance_16
+    400292: instance_16 1
+    400294: instance_17
+    400296: instance_17 1
+    400298: instance_18
+    400300: instance_18 1
+    400302: instance_19
+    400304: instance_2
+    400306: instance_2 1
+    400308: instance_20
+    400310: instance_21
+    400312: instance_22
+    400314: instance_23
+    400316: instance_24
+    400318: instance_25
+    400320: instance_26
+    400322: instance_27
+    400324: instance_28
+    400326: instance_29
+    400328: instance_3
+    400330: instance_3 1
+    400332: instance_30
+    400334: instance_30 1
+    400336: instance_30 10
+    400338: instance_30 11
+    400340: instance_30 12
+    400342: instance_30 13
+    400344: instance_30 14
+    400346: instance_30 15
+    400348: instance_30 2
+    400350: instance_30 3
+    400352: instance_30 4
+    400354: instance_30 5
+    400356: instance_30 6
+    400358: instance_30 7
+    400360: instance_30 8
+    400362: instance_30 9
+    400364: instance_31
+    400366: instance_32
+    400368: instance_33
+    400370: instance_34
+    400372: instance_35
+    400374: instance_36
+    400376: instance_37
+    400378: instance_38
+    400380: instance_39
+    400382: instance_4
+    400384: instance_4 1
+    400386: instance_40
+    400388: instance_41
+    400390: instance_42
+    400392: instance_43
+    400394: instance_44
+    400396: instance_45
+    400398: instance_46
+    400400: instance_47
+    400402: instance_48
+    400404: instance_49
+    400406: instance_5
+    400408: instance_5 1
+    400410: instance_50
+    400412: instance_50 1
+    400414: instance_51
+    400416: instance_51 1
+    400418: instance_52
+    400420: instance_53
+    400422: instance_54
+    400424: instance_55
+    400426: instance_56
+    400428: instance_57
+    400430: instance_6
+    400432: instance_6 1
+    400434: instance_7
+    400436: instance_7 1
+    400438: instance_8
+    400440: instance_8 1
+    400442: instance_8 2
+    400444: instance_8 3
+    400446: instance_8 4
+    400448: instance_8 5
+    400450: instance_9
+    400452: instance_9 1
+    400454: instance_9 2
+    400456: instance_9 3
+    400458: instance_9 4
+    400460: instance_9 5
+    400462: //RootNode
+    2300000: ID1010
+    2300002: ID1016
+    2300004: ID1039
+    2300006: ID1063
+    2300008: ID1069
+    2300010: ID1092
+    2300012: ID1100
+    2300014: ID1125
+    2300016: ID1131
+    2300018: ID1156
+    2300020: ID116
+    2300022: ID1162
+    2300024: ID1200
+    2300026: ID1206
+    2300028: ID1219
+    2300030: ID122
+    2300032: ID1225
+    2300034: ID1267
+    2300036: ID1273
+    2300038: ID1286
+    2300040: ID1292
+    2300042: ID1334
+    2300044: ID1340
+    2300046: ID1353
+    2300048: ID1359
+    2300050: ID1400
+    2300052: ID1406
+    2300054: ID1412
+    2300056: ID1418
+    2300058: ID1424
+    2300060: ID1430
+    2300062: ID164
+    2300064: ID170
+    2300066: ID183
+    2300068: ID189
+    2300070: ID21
+    2300072: ID231
+    2300074: ID237
+    2300076: ID250
+    2300078: ID256
+    2300080: ID29
+    2300082: ID298
+    2300084: ID304
+    2300086: ID317
+    2300088: ID323
+    2300090: ID370
+    2300092: ID376
+    2300094: ID382
+    2300096: ID388
+    2300098: ID394
+    2300100: ID400
+    2300102: ID418
+    2300104: ID434
+    2300106: ID457
+    2300108: ID472
+    2300110: ID52
+    2300112: ID60
+    2300114: ID709
+    2300116: ID728
+    2300118: ID734
+    2300120: ID740
+    2300122: ID746
+    2300124: ID752
+    2300126: ID758
+    2300128: ID766
+    2300130: ID772
+    2300132: ID778
+    2300134: ID784
+    2300136: ID790
+    2300138: ID796
+    2300140: ID802
+    2300142: ID808
+    2300144: ID814
+    2300146: ID820
+    2300148: ID826
+    2300150: ID832
+    2300152: ID838
+    2300154: ID844
+    2300156: ID85
+    2300158: ID850
+    2300160: ID856
+    2300162: ID862
+    2300164: ID868
+    2300166: ID874
+    2300168: ID880
+    2300170: ID886
+    2300172: ID892
+    2300174: ID898
+    2300176: ID904
+    2300178: ID91
+    2300180: ID910
+    2300182: ID916
+    2300184: ID922
+    2300186: ID928
+    2300188: ID934
+    2300190: ID940
+    2300192: ID946
+    2300194: ID976
+    2300196: ID997
+    2300198: instance_10
+    2300200: instance_10 1
+    2300202: instance_10 2
+    2300204: instance_10 3
+    2300206: instance_10 4
+    2300208: instance_10 5
+    2300210: instance_11
+    2300212: instance_11 1
+    2300214: instance_11 2
+    2300216: instance_11 3
+    2300218: instance_11 4
+    2300220: instance_11 5
+    2300222: instance_12
+    2300224: instance_12 1
+    2300226: instance_12 2
+    2300228: instance_12 3
+    2300230: instance_12 4
+    2300232: instance_12 5
+    2300234: instance_13
+    2300236: instance_13 1
+    2300238: instance_13 2
+    2300240: instance_13 3
+    2300242: instance_13 4
+    2300244: instance_13 5
+    2300246: instance_16
+    2300248: instance_16 1
+    2300250: instance_17
+    2300252: instance_17 1
+    2300254: instance_18
+    2300256: instance_18 1
+    2300258: instance_20
+    2300260: instance_23
+    2300262: instance_24
+    2300264: instance_25
+    2300266: instance_26
+    2300268: instance_28
+    2300270: instance_29
+    2300272: instance_3
+    2300274: instance_3 1
+    2300276: instance_30
+    2300278: instance_30 1
+    2300280: instance_30 10
+    2300282: instance_30 11
+    2300284: instance_30 12
+    2300286: instance_30 13
+    2300288: instance_30 14
+    2300290: instance_30 15
+    2300292: instance_30 2
+    2300294: instance_30 3
+    2300296: instance_30 4
+    2300298: instance_30 5
+    2300300: instance_30 6
+    2300302: instance_30 7
+    2300304: instance_30 8
+    2300306: instance_30 9
+    2300308: instance_31
+    2300310: instance_32
+    2300312: instance_33
+    2300314: instance_34
+    2300316: instance_35
+    2300318: instance_36
+    2300320: instance_37
+    2300322: instance_38
+    2300324: instance_39
+    2300326: instance_4
+    2300328: instance_4 1
+    2300330: instance_40
+    2300332: instance_41
+    2300334: instance_42
+    2300336: instance_43
+    2300338: instance_44
+    2300340: instance_45
+    2300342: instance_46
+    2300344: instance_47
+    2300346: instance_48
+    2300348: instance_5
+    2300350: instance_5 1
+    2300352: instance_50
+    2300354: instance_50 1
+    2300356: instance_51
+    2300358: instance_51 1
+    2300360: instance_53
+    2300362: instance_55
+    2300364: instance_56
+    2300366: instance_6
+    2300368: instance_6 1
+    2300370: instance_8
+    2300372: instance_8 1
+    2300374: instance_8 2
+    2300376: instance_8 3
+    2300378: instance_8 4
+    2300380: instance_8 5
+    2300382: instance_9
+    2300384: instance_9 1
+    2300386: instance_9 2
+    2300388: instance_9 3
+    2300390: instance_9 4
+    2300392: instance_9 5
+    3300000: ID1010
+    3300002: ID1016
+    3300004: ID1039
+    3300006: ID1063
+    3300008: ID1069
+    3300010: ID1092
+    3300012: ID1100
+    3300014: ID1125
+    3300016: ID1131
+    3300018: ID1156
+    3300020: ID116
+    3300022: ID1162
+    3300024: ID1200
+    3300026: ID1206
+    3300028: ID1219
+    3300030: ID122
+    3300032: ID1225
+    3300034: ID1267
+    3300036: ID1273
+    3300038: ID1286
+    3300040: ID1292
+    3300042: ID1334
+    3300044: ID1340
+    3300046: ID1353
+    3300048: ID1359
+    3300050: ID1400
+    3300052: ID1406
+    3300054: ID1412
+    3300056: ID1418
+    3300058: ID1424
+    3300060: ID1430
+    3300062: ID164
+    3300064: ID170
+    3300066: ID183
+    3300068: ID189
+    3300070: ID21
+    3300072: ID231
+    3300074: ID237
+    3300076: ID250
+    3300078: ID256
+    3300080: ID29
+    3300082: ID298
+    3300084: ID304
+    3300086: ID317
+    3300088: ID323
+    3300090: ID370
+    3300092: ID376
+    3300094: ID382
+    3300096: ID388
+    3300098: ID394
+    3300100: ID400
+    3300102: ID418
+    3300104: ID434
+    3300106: ID457
+    3300108: ID472
+    3300110: ID52
+    3300112: ID60
+    3300114: ID709
+    3300116: ID728
+    3300118: ID734
+    3300120: ID740
+    3300122: ID746
+    3300124: ID752
+    3300126: ID758
+    3300128: ID766
+    3300130: ID772
+    3300132: ID778
+    3300134: ID784
+    3300136: ID790
+    3300138: ID796
+    3300140: ID802
+    3300142: ID808
+    3300144: ID814
+    3300146: ID820
+    3300148: ID826
+    3300150: ID832
+    3300152: ID838
+    3300154: ID844
+    3300156: ID85
+    3300158: ID850
+    3300160: ID856
+    3300162: ID862
+    3300164: ID868
+    3300166: ID874
+    3300168: ID880
+    3300170: ID886
+    3300172: ID892
+    3300174: ID898
+    3300176: ID904
+    3300178: ID91
+    3300180: ID910
+    3300182: ID916
+    3300184: ID922
+    3300186: ID928
+    3300188: ID934
+    3300190: ID940
+    3300192: ID946
+    3300194: ID976
+    3300196: ID997
+    3300198: instance_10
+    3300200: instance_10 1
+    3300202: instance_10 2
+    3300204: instance_10 3
+    3300206: instance_10 4
+    3300208: instance_10 5
+    3300210: instance_11
+    3300212: instance_11 1
+    3300214: instance_11 2
+    3300216: instance_11 3
+    3300218: instance_11 4
+    3300220: instance_11 5
+    3300222: instance_12
+    3300224: instance_12 1
+    3300226: instance_12 2
+    3300228: instance_12 3
+    3300230: instance_12 4
+    3300232: instance_12 5
+    3300234: instance_13
+    3300236: instance_13 1
+    3300238: instance_13 2
+    3300240: instance_13 3
+    3300242: instance_13 4
+    3300244: instance_13 5
+    3300246: instance_16
+    3300248: instance_16 1
+    3300250: instance_17
+    3300252: instance_17 1
+    3300254: instance_18
+    3300256: instance_18 1
+    3300258: instance_20
+    3300260: instance_23
+    3300262: instance_24
+    3300264: instance_25
+    3300266: instance_26
+    3300268: instance_28
+    3300270: instance_29
+    3300272: instance_3
+    3300274: instance_3 1
+    3300276: instance_30
+    3300278: instance_30 1
+    3300280: instance_30 10
+    3300282: instance_30 11
+    3300284: instance_30 12
+    3300286: instance_30 13
+    3300288: instance_30 14
+    3300290: instance_30 15
+    3300292: instance_30 2
+    3300294: instance_30 3
+    3300296: instance_30 4
+    3300298: instance_30 5
+    3300300: instance_30 6
+    3300302: instance_30 7
+    3300304: instance_30 8
+    3300306: instance_30 9
+    3300308: instance_31
+    3300310: instance_32
+    3300312: instance_33
+    3300314: instance_34
+    3300316: instance_35
+    3300318: instance_36
+    3300320: instance_37
+    3300322: instance_38
+    3300324: instance_39
+    3300326: instance_4
+    3300328: instance_4 1
+    3300330: instance_40
+    3300332: instance_41
+    3300334: instance_42
+    3300336: instance_43
+    3300338: instance_44
+    3300340: instance_45
+    3300342: instance_46
+    3300344: instance_47
+    3300346: instance_48
+    3300348: instance_5
+    3300350: instance_5 1
+    3300352: instance_50
+    3300354: instance_50 1
+    3300356: instance_51
+    3300358: instance_51 1
+    3300360: instance_53
+    3300362: instance_55
+    3300364: instance_56
+    3300366: instance_6
+    3300368: instance_6 1
+    3300370: instance_8
+    3300372: instance_8 1
+    3300374: instance_8 2
+    3300376: instance_8 3
+    3300378: instance_8 4
+    3300380: instance_8 5
+    3300382: instance_9
+    3300384: instance_9 1
+    3300386: instance_9 2
+    3300388: instance_9 3
+    3300390: instance_9 4
+    3300392: instance_9 5
+    4300000: instance_3
+    4300002: ID21
+    4300004: ID29
+    4300006: instance_4
+    4300008: ID52
+    4300010: ID60
+    4300012: instance_5
+    4300014: ID85
+    4300016: ID91
+    4300018: instance_6
+    4300020: ID116
+    4300022: ID122
+    4300024: instance_8
+    4300026: instance_9
+    4300028: instance_10
+    4300030: ID164
+    4300032: ID170
+    4300034: instance_11
+    4300036: ID183
+    4300038: ID189
+    4300040: instance_12
+    4300042: instance_13
+    4300044: instance_8
+    4300046: instance_9
+    4300048: instance_10
+    4300050: ID231
+    4300052: ID237
+    4300054: instance_11
+    4300056: ID250
+    4300058: ID256
+    4300060: instance_12
+    4300062: instance_13
+    4300064: instance_8
+    4300066: instance_9
+    4300068: instance_10
+    4300070: ID298
+    4300072: ID304
+    4300074: instance_11
+    4300076: ID317
+    4300078: ID323
+    4300080: instance_12
+    4300082: instance_13
+    4300084: instance_16
+    4300086: instance_17
+    4300088: instance_18
+    4300090: ID370
+    4300092: ID376
+    4300094: ID382
+    4300096: ID388
+    4300098: ID394
+    4300100: ID400
+    4300102: instance_20
+    4300104: ID418
+    4300106: instance_23
+    4300108: ID457
+    4300110: instance_24
+    4300112: ID434
+    4300114: instance_25
+    4300116: instance_26
+    4300118: ID728
+    4300120: ID734
+    4300122: ID740
+    4300124: ID746
+    4300126: ID752
+    4300128: ID758
+    4300130: ID766
+    4300132: ID772
+    4300134: ID778
+    4300136: ID784
+    4300138: ID790
+    4300140: ID796
+    4300142: ID802
+    4300144: ID808
+    4300146: ID814
+    4300148: ID820
+    4300150: ID826
+    4300152: ID832
+    4300154: ID838
+    4300156: ID844
+    4300158: ID850
+    4300160: ID856
+    4300162: ID862
+    4300164: ID868
+    4300166: ID874
+    4300168: ID880
+    4300170: ID886
+    4300172: ID892
+    4300174: ID898
+    4300176: ID904
+    4300178: ID910
+    4300180: ID916
+    4300182: ID922
+    4300184: ID928
+    4300186: ID934
+    4300188: ID940
+    4300190: ID946
+    4300192: instance_28
+    4300194: ID472
+    4300196: instance_29
+    4300198: instance_30
+    4300200: instance_31
+    4300202: instance_30
+    4300204: instance_32
+    4300206: instance_30
+    4300208: instance_33
+    4300210: instance_30
+    4300212: instance_34
+    4300214: instance_30
+    4300216: instance_35
+    4300218: instance_30
+    4300220: instance_36
+    4300222: instance_30
+    4300224: instance_37
+    4300226: instance_30
+    4300228: instance_38
+    4300230: instance_30
+    4300232: instance_39
+    4300234: instance_30
+    4300236: instance_40
+    4300238: instance_30
+    4300240: instance_41
+    4300242: instance_30
+    4300244: instance_42
+    4300246: instance_30
+    4300248: instance_43
+    4300250: instance_30
+    4300252: instance_44
+    4300254: instance_30
+    4300256: instance_45
+    4300258: instance_30
+    4300260: instance_46
+    4300262: ID709
+    4300264: instance_47
+    4300266: instance_48
+    4300268: instance_50
+    4300270: instance_51
+    4300272: ID976
+    4300274: instance_50
+    4300276: instance_51
+    4300278: ID997
+    4300280: instance_53
+    4300282: ID1010
+    4300284: ID1016
+    4300286: instance_55
+    4300288: instance_56
+    4300290: ID1039
+    4300292: instance_3
+    4300294: ID1063
+    4300296: ID1069
+    4300298: instance_4
+    4300300: ID1092
+    4300302: ID1100
+    4300304: instance_5
+    4300306: ID1125
+    4300308: ID1131
+    4300310: instance_6
+    4300312: ID1156
+    4300314: ID1162
+    4300316: instance_8
+    4300318: instance_9
+    4300320: instance_10
+    4300322: ID1200
+    4300324: ID1206
+    4300326: instance_11
+    4300328: ID1219
+    4300330: ID1225
+    4300332: instance_12
+    4300334: instance_13
+    4300336: instance_8
+    4300338: instance_9
+    4300340: instance_10
+    4300342: ID1267
+    4300344: ID1273
+    4300346: instance_11
+    4300348: ID1286
+    4300350: ID1292
+    4300352: instance_12
+    4300354: instance_13
+    4300356: instance_8
+    4300358: instance_9
+    4300360: instance_10
+    4300362: ID1334
+    4300364: ID1340
+    4300366: instance_11
+    4300368: ID1353
+    4300370: ID1359
+    4300372: instance_12
+    4300374: instance_13
+    4300376: instance_16
+    4300378: instance_17
+    4300380: instance_18
+    4300382: ID1400
+    4300384: ID1406
+    4300386: ID1412
+    4300388: ID1418
+    4300390: ID1424
+    4300392: ID1430
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
