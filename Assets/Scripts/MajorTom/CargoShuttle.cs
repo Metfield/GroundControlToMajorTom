@@ -230,8 +230,8 @@ public class CargoShuttle : MonoBehaviour
         waitingForCoroutine = false;
     }
 
-    private const int x_offset = 160;
-    private const int y_offset = 60;
+    private const int x_offset = 120;
+    private const int y_offset = 40;
 
     private const int raise_above_arm_base = 50;
 
