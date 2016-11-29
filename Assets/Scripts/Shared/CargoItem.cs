@@ -1,9 +1,12 @@
 ﻿
-public enum ECargoItem
+namespace Shared
 {
-    Empty,
-    Water,
-    Oxygen,
-    Food,
-    Equipment
+    public enum ECargoItem
+    {
+        Empty,
+        Water,
+        Oxygen,
+        Food,
+        Equipment
+    }
 }

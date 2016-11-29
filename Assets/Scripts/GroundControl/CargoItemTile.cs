@@ -29,6 +29,7 @@ namespace GroundControl
             m_groundControlManager = GroundControlManager.Instance;
             m_gui = GroundControlGUI.Instance;
             m_image = this.GetComponent<Image>();
+            m_rectTransform.SetParent(m_gui.transform);
         }
 
         private void OnEnable()
@@ -57,8 +58,12 @@ namespace GroundControl
         {
             m_selected = true;
             m_image.raycastTarget = false;
-            m_rectTransform.SetParent(m_gui.HeldTileParent);
-            if(GrabbedEvent != null)
+
+            // Tile must be paranted to the root canvas object
+            // Otherwise the tile will be wrongly positioned
+            m_rectTransform.SetParent(m_gui.transform);
+
+            if (GrabbedEvent != null)
             {
                 GrabbedEvent(this);
             }
@@ -68,7 +73,6 @@ namespace GroundControl
         {
             m_selected = false;
             m_image.raycastTarget = true;
-            m_rectTransform.SetParent(m_gui.PlacedTileParent);
             if (DroppedEvent != null)
             {
                 DroppedEvent(this);

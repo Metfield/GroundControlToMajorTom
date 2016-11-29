@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
+using System.Collections;
+using Shared;
 
 namespace GroundControl
 {
@@ -47,12 +48,24 @@ namespace GroundControl
             get { return m_placedTileParent; }
         }
 
+        [SerializeField]
+        private GameObject m_endScreen;
+
+        private GameManager m_gameManager;
+
         private void Start()
         {
+            m_gameManager = GameManager.Instance;
+
             SetWaterCost(m_cargoShop.GetCost(ECargoItem.Water));
             SetOxygenCost(m_cargoShop.GetCost(ECargoItem.Oxygen));
             SetFoodCost(m_cargoShop.GetCost(ECargoItem.Food));
             SetEquipmentCost(m_cargoShop.GetCost(ECargoItem.Equipment));
+        }
+
+        private void OnEnable()
+        {
+            GameManager.NewStateEvent += HandleNewState;
         }
 
         public void SetMoney(int money)
@@ -99,6 +112,32 @@ namespace GroundControl
             m_equipmentCostText.text = CURRENCY + cost;
         }
 
+        private void HandleNewState(EGameState state)
+        {
+            switch(state)
+            {
+                case EGameState.WaitingForPlayers:
+                    m_endScreen.SetActive(false);
+                    break;
+                case EGameState.StartingGame:
+                    m_endScreen.SetActive(false);
+                    break;
+                case EGameState.Game:
+                    // Do nothing
+                    break;
+                case EGameState.GameOver:
+                    m_endScreen.SetActive(true);
+                    break;
+                default:
+                    // Do nothing
+                    break;
+            }
+        }
+
+        public void RestartGame()
+        {
+            m_gameManager.SetNewState(EGameState.WaitingForPlayers);
+        }
     }
 }
 

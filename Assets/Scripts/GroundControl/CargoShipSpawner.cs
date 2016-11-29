@@ -43,6 +43,11 @@ namespace GroundControl
             }
             return cargoShip;
         }
+
+        public void Reset()
+        {
+            m_cargoShipPool.Reset();
+        }
     }
 }
 

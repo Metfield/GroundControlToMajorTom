@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Util;
+using Shared;
 
 namespace GroundControl
 {
@@ -25,10 +26,11 @@ namespace GroundControl
         [SerializeField]
         private int m_baseLaunchCost = 10;
 
-        private int m_currenLaunchCost;
+        private int m_currentLaunchCost;
 
         private float m_incomeTime;
 
+        private GameManager m_gameManager;
         private GroundControlPlayer m_player;
         private GroundControlGUI m_gui;
 
@@ -37,38 +39,37 @@ namespace GroundControl
         // ensure that the spawner is ready.
         private void Start()
         {
+            m_gameManager = GameManager.Instance;
             m_player = new GroundControlPlayer(m_initialMoney);
             m_launchTimer = new Timer();
-            
             m_gui = GroundControlGUI.Instance;
-            m_gui.SetMoney(m_initialMoney);
-
-            SetIncomeTime();
-            ResetLaunchCost();
-
-            PrepareCargoShipForLaunch();
         }
         
         private void OnEnable()
         {
+            // Subscribe to events
             CargoMenu.CargoLoadedEvent += CargoLoaded;
             CargoMenu.CargoUnloadedEvent += CargoUnoaded;
-            //CargoShop.OnBoughtEvent += ReducePlayerMoney;
-            //CargoItemTile.ReturnedToShopEvent += ItemReturnedToShop;
+            MissionTime.TimesUpEvent += GameOver;
+            GameManager.NewStateEvent += HandleNewState;
         }
 
         private void OnDisable()
         {
+            // Unsubscribe to events
             CargoMenu.CargoLoadedEvent -= CargoLoaded;
             CargoMenu.CargoUnloadedEvent -= CargoUnoaded;
-            //CargoShop.OnBoughtEvent -= ReducePlayerMoney;
-            //CargoItemTile.ReturnedToShopEvent -= ItemReturnedToShop;
+            MissionTime.TimesUpEvent -= GameOver;
+            GameManager.NewStateEvent -= HandleNewState;
         }
 
         private void Update()
         {
-            UpdateLaunch();
-            UpdateIncome();
+            if(m_gameManager.CurrentState == EGameState.Game)
+            {
+                UpdateLaunch();
+                UpdateIncome();
+            }
         }
 
         private void UpdateLaunch()
@@ -103,12 +104,11 @@ namespace GroundControl
         /// </summary>
         public void PrepareCargoShipForLaunch()
         {
-            m_shipToLaunch = m_cargoShipSpawner.Spawn();
             if (m_shipToLaunch == null)
             {
-                Log.Warning("No ship spawned");
+                m_shipToLaunch = m_cargoShipSpawner.Spawn();
             }
-            else
+            if (m_shipToLaunch != null)
             {
                 m_launchTimer.Stop();
                 StartCoroutine(LaunchReadyRoutine());
@@ -117,7 +117,7 @@ namespace GroundControl
 
         public void AttemptLaunch()
         {
-            if (m_shipToLaunch != null && m_currenLaunchCost <= m_player.GetMoney())
+            if (m_shipToLaunch != null && m_currentLaunchCost <= m_player.GetMoney())
             {
                 LaunchCargoShip();
             }
@@ -138,22 +138,26 @@ namespace GroundControl
         private IEnumerator LaunchReadyRoutine()
         {
             yield return StartCoroutine(m_gui.SlideInCargoMenuRoutine());
-            m_gui.SetLaunchButtonInteractable(true);
+            m_gui.SetLaunchButtonInteractable(m_player.GetMoney() >= m_currentLaunchCost && m_shipToLaunch != null);
         }
 
         private IEnumerator LaunchRoutine()
         {
             m_gui.SetLaunchButtonInteractable(false);
 
-            UpdatePlayerMoney(-m_currenLaunchCost);
+            UpdatePlayerMoney(-m_currentLaunchCost);
             UpdateMoneyUI(m_player.GetMoney());
             ResetLaunchCost();
 
             yield return StartCoroutine(m_gui.LaunchRoutine());
 
-            m_shipToLaunch.Launch();
-            m_shipToLaunch = null;
-            m_launchTimer.Start();
+            if(m_shipToLaunch != null)
+            {
+                m_shipToLaunch.Launch();
+                m_shipToLaunch = null;
+                m_launchTimer.Start();
+                LaunchButtonInteractable(false);
+            }
         }
 
         /// <summary>
@@ -184,26 +188,34 @@ namespace GroundControl
 
         private void ResetLaunchCost()
         {
-            m_currenLaunchCost = m_baseLaunchCost;
-            m_gui.SetLaunchCost(m_currenLaunchCost);
+            m_currentLaunchCost = m_baseLaunchCost;
+            m_gui.SetLaunchCost(m_currentLaunchCost);
+            LaunchButtonInteractable(m_player.GetMoney() >= m_currentLaunchCost && m_shipToLaunch != null);
         }
 
         public void UpdateLaunchCost(int amount)
         {
-            m_currenLaunchCost = Mathf.Max(m_baseLaunchCost, m_currenLaunchCost + amount);
-            m_gui.SetLaunchCost(m_currenLaunchCost);
+            m_currentLaunchCost = Mathf.Max(m_baseLaunchCost, m_currentLaunchCost + amount);
+            m_gui.SetLaunchCost(m_currentLaunchCost);
+            LaunchButtonInteractable(m_player.GetMoney() >= m_currentLaunchCost && m_shipToLaunch != null);
         }
 
         public void UpdatePlayerMoney(int amount)
         {
             m_player.UpdateMoney(amount);
+            LaunchButtonInteractable(m_player.GetMoney() >= m_currentLaunchCost && m_shipToLaunch != null);
         }
 
         public void UpdateMoneyUI(int money)
         {
             m_gui.SetMoney(money);
         }
-        
+
+        public void LaunchButtonInteractable(bool interactable)
+        {
+            m_gui.SetLaunchButtonInteractable(interactable);
+        }
+
         public Vector3 GetShipPosition()
         {
             Vector3 position = Vector3.zero;
@@ -212,6 +224,58 @@ namespace GroundControl
                 position = m_shipToLaunch.transform.position;
             }
             return position;
+        }
+
+        private void GameOver()
+        {
+            // TODO: Game over stuff.
+            m_shipToLaunch = null;
+            m_cargoShipSpawner.Reset();
+            LaunchButtonInteractable(false);
+            m_gameManager.SetNewState(EGameState.GameOver);
+        }
+
+        public EGameState GetState()
+        {
+            return m_gameManager.CurrentState;
+        }
+
+        public bool IsShipReady()
+        {
+            return m_shipToLaunch != null;
+        }
+
+        private void SetupGame()
+        {
+            m_player.SetMoney(m_initialMoney);
+            m_gui.SetMoney(m_initialMoney);
+            SetIncomeTime();
+            ResetLaunchCost();
+            PrepareCargoShipForLaunch();
+
+            m_gameManager.SetNewState(EGameState.Game);
+        }
+
+        private void HandleNewState(EGameState state)
+        {
+            switch (state)
+            {
+                case EGameState.WaitingForPlayers:
+                    // Do nothing
+                    break;
+                case EGameState.StartingGame:
+                    SetupGame();
+                    break;
+                case EGameState.Game:
+                    // Do nothing
+                    break;
+                case EGameState.GameOver:
+                    // Do nothing
+                    break;
+                default:
+                    // Do nothing
+                    break;
+            }
         }
     }
 }

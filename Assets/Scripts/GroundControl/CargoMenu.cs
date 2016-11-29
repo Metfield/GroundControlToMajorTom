@@ -118,6 +118,9 @@ namespace GroundControl
                 cargoTile.SetLocalPosition(position);
                 m_cargoItemSlots[slot] = cargoTile;
 
+                // Parent the tile to this component so it will move with it
+                cargoTile.SetParent(m_rectTransform);
+
                 // Notify that cargo was loaded
                 if(CargoLoadedEvent != null) {
                     CargoLoadedEvent(cargoTile.GetProperties());
@@ -204,18 +207,13 @@ namespace GroundControl
         {
             placementMarker.rectTransform.localPosition = position;
         }
-
-        /*public void Launch()
-        {
-            StartCoroutine(LaunchRoutine());
-        }*/
-
+        
         public IEnumerator LaunchRoutine()
         {
             float timer = 0f;
             float timeFactor = 1.0f / m_launchAnimTime;
             Vector3 startPosition = m_rectTransform.position;
-            while(timer <= m_launchAnimTime)
+            while(timer <= m_launchAnimTime && m_groundControlManager.GetState() == Shared.EGameState.Game)
             {
                 timer += Time.deltaTime;
                 float t = timer * timeFactor;
@@ -228,10 +226,6 @@ namespace GroundControl
 
                 yield return null;
             }
-
-            //m_groundControlManager.LaunchCargoShip();
-            //ClearCargo();
-            //StartCoroutine(SlideInRoutine());
         }
 
         public IEnumerator SlideInRoutine()

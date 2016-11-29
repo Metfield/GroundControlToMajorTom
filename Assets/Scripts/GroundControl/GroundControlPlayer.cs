@@ -8,7 +8,7 @@ namespace GroundControl
 
         public GroundControlPlayer(int money)
         {
-            this.money = money;
+            SetMoney(money);
         }
 
         public int GetMoney()
@@ -19,6 +19,11 @@ namespace GroundControl
         public void UpdateMoney(int amount)
         {
             money = Mathf.Max(0, money + amount);
+        }
+
+        public void SetMoney(int money)
+        {
+            this.money = money;
         }
     }
 }
