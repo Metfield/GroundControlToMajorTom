@@ -51,11 +51,11 @@ namespace GroundControl
         [SerializeField]
         private GameObject m_endScreen;
 
-        private GameManager m_gameManager;
+        private GameStateManager m_gameState;
 
         private void Start()
         {
-            m_gameManager = GameManager.Instance;
+            m_gameState = GameStateManager.Instance;
 
             SetWaterCost(m_cargoShop.GetCost(ECargoItem.Water));
             SetOxygenCost(m_cargoShop.GetCost(ECargoItem.Oxygen));
@@ -65,7 +65,7 @@ namespace GroundControl
 
         private void OnEnable()
         {
-            GameManager.NewStateEvent += HandleNewState;
+            GameStateManager.NewStateEvent += HandleNewState;
         }
 
         public void SetMoney(int money)
@@ -136,7 +136,7 @@ namespace GroundControl
 
         public void RestartGame()
         {
-            m_gameManager.SetNewState(EGameState.WaitingForPlayers);
+            m_gameState.SetNewState(EGameState.WaitingForPlayers);
         }
     }
 }

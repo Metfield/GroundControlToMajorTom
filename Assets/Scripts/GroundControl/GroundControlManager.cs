@@ -30,7 +30,7 @@ namespace GroundControl
 
         private float m_incomeTime;
 
-        private GameManager m_gameManager;
+        private GameStateManager m_gameState;
         private GroundControlPlayer m_player;
         private GroundControlGUI m_gui;
 
@@ -39,7 +39,7 @@ namespace GroundControl
         // ensure that the spawner is ready.
         private void Start()
         {
-            m_gameManager = GameManager.Instance;
+            m_gameState = GameStateManager.Instance;
             m_player = new GroundControlPlayer(m_initialMoney);
             m_launchTimer = new Timer();
             m_gui = GroundControlGUI.Instance;
@@ -51,7 +51,7 @@ namespace GroundControl
             CargoMenu.CargoLoadedEvent += CargoLoaded;
             CargoMenu.CargoUnloadedEvent += CargoUnoaded;
             MissionTime.TimesUpEvent += GameOver;
-            GameManager.NewStateEvent += HandleNewState;
+            GameStateManager.NewStateEvent += HandleNewState;
         }
 
         private void OnDisable()
@@ -60,12 +60,12 @@ namespace GroundControl
             CargoMenu.CargoLoadedEvent -= CargoLoaded;
             CargoMenu.CargoUnloadedEvent -= CargoUnoaded;
             MissionTime.TimesUpEvent -= GameOver;
-            GameManager.NewStateEvent -= HandleNewState;
+            GameStateManager.NewStateEvent -= HandleNewState;
         }
 
         private void Update()
         {
-            if(m_gameManager.CurrentState == EGameState.Game)
+            if(m_gameState.CurrentState == EGameState.Game)
             {
                 UpdateLaunch();
                 UpdateIncome();
@@ -232,12 +232,12 @@ namespace GroundControl
             m_shipToLaunch = null;
             m_cargoShipSpawner.Reset();
             LaunchButtonInteractable(false);
-            m_gameManager.SetNewState(EGameState.GameOver);
+            m_gameState.SetNewState(EGameState.GameOver);
         }
 
         public EGameState GetState()
         {
-            return m_gameManager.CurrentState;
+            return m_gameState.CurrentState;
         }
 
         public bool IsShipReady()
@@ -253,7 +253,7 @@ namespace GroundControl
             ResetLaunchCost();
             PrepareCargoShipForLaunch();
 
-            m_gameManager.SetNewState(EGameState.Game);
+            m_gameState.SetNewState(EGameState.Game);
         }
 
         private void HandleNewState(EGameState state)
