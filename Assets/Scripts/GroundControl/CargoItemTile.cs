@@ -9,6 +9,9 @@ namespace GroundControl
         [SerializeField]
         private Vector3 m_dragOffset;
 
+        [SerializeField]
+        private AudioSource m_audio;
+
         private bool m_selected;
         private RectTransform m_rectTransform;
         private GroundControlManager m_groundControlManager;
