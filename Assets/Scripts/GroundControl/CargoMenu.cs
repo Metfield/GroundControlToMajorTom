@@ -18,7 +18,7 @@ namespace GroundControl
         private int m_filledSlots = 0;
 
         [SerializeField]
-        private Image placementMarker;
+        private Image m_placementMarker;
 
         [SerializeField]
         private float m_launchAnimTime = 1.0f;
@@ -26,11 +26,26 @@ namespace GroundControl
         [SerializeField]
         private float m_slideInAnimTime = 1.0f;
 
+        [Serializable]
+        private class CargoMenuSfx
+        {
+            public AudioClip loadCargoSfx;
+            public AudioClip dropOutsideMenuSfx;
+            public AudioClip swooshSfx;
+        }
+
+        [SerializeField]
+        private CargoMenuSfx m_sfx;
+
+        [SerializeField]
+        private AudioSource m_audioSource;
+
         private int m_maxCapacity;
         private Vector2[] m_slotPositions;
         private RectTransform m_rectTransform;
         private CargoItemTile m_heldTile;
         private GroundControlManager m_groundControlManager;
+        private GroundControlGUI m_gui;
 
         public Vector3 m_defaultPosition;
 
@@ -43,6 +58,7 @@ namespace GroundControl
         private void Awake()
         {
             m_groundControlManager = GroundControlManager.Instance;
+            m_gui = GroundControlGUI.Instance;
 
             m_maxCapacity = m_cargoSlotsX * m_cargoSlotsY;
 
@@ -121,6 +137,9 @@ namespace GroundControl
                 // Parent the tile to this component so it will move with it
                 cargoTile.SetParent(m_rectTransform);
 
+                // Play sound effect
+                m_audioSource.PlayOneShot(m_sfx.loadCargoSfx);
+
                 // Notify that cargo was loaded
                 if(CargoLoadedEvent != null) {
                     CargoLoadedEvent(cargoTile.GetProperties());
@@ -182,6 +201,7 @@ namespace GroundControl
             }
             else
             {
+                m_audioSource.PlayOneShot(m_sfx.dropOutsideMenuSfx);
                 itemTile.ReturnToShop();
             }
             SetPlacementMarkerActive(false);
@@ -200,12 +220,12 @@ namespace GroundControl
 
         private void SetPlacementMarkerActive(bool active)
         {
-            placementMarker.gameObject.SetActive(active);
+            m_placementMarker.gameObject.SetActive(active);
         }
 
         private void SetPlacementMarkerPosition(Vector2 position)
         {
-            placementMarker.rectTransform.localPosition = position;
+            m_placementMarker.rectTransform.localPosition = position;
         }
         
         public IEnumerator LaunchRoutine()
@@ -213,6 +233,11 @@ namespace GroundControl
             float timer = 0f;
             float timeFactor = 1.0f / m_launchAnimTime;
             Vector3 startPosition = m_rectTransform.position;
+            m_audioSource.PlayOneShot(m_sfx.swooshSfx);
+
+            // The the GUI manager that the cargo menu is not in place and can't be used
+            m_gui.CargoMenuPresent(false);
+
             while(timer <= m_launchAnimTime && m_groundControlManager.GetState() == Shared.EGameState.Game)
             {
                 timer += Time.deltaTime;
@@ -245,6 +270,9 @@ namespace GroundControl
                 m_rectTransform.localPosition = nextPosition;
                 yield return null;
             }
+
+            // The the GUI manager that the cargo menu is back in place and can be used
+            m_gui.CargoMenuPresent(true);
         }
 
         private void ClearCargo()

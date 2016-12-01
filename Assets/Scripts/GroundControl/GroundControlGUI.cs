@@ -53,6 +53,9 @@ namespace GroundControl
 
         private GameStateManager m_gameState;
 
+        public delegate void BuyingAllowed(bool allowed);
+        public static event BuyingAllowed BuyingAllowedEvent;
+
         private void Start()
         {
             m_gameState = GameStateManager.Instance;
@@ -137,6 +140,18 @@ namespace GroundControl
         public void RestartGame()
         {
             m_gameState.SetNewState(EGameState.WaitingForPlayers);
+        }
+
+        /// <summary>
+        /// Set if the cargo menu is present and can be used
+        /// </summary>
+        /// <param name="present"></param>
+        public void CargoMenuPresent(bool present)
+        {
+            // It is only allowed to buy cargo items if the cargo manu is present
+            if(BuyingAllowedEvent != null) {
+                BuyingAllowedEvent(present);
+            }
         }
     }
 }

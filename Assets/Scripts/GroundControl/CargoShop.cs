@@ -17,12 +17,17 @@ namespace GroundControl
         [SerializeField]
         private GameObjectPool m_itemTilePool;
 
+        [SerializeField]
+        private Button[] m_shopButtons;
+
         private GroundControlManager m_groundControlManager;
         private GroundControlGUI m_gui;
         private Dictionary<ECargoItem, CargoItemProperties> m_shopItemsDictionary;
 
         private Dictionary<string, ECargoItem> m_stringKeys;
-        
+
+        private bool m_canBuy = true;
+
         // Use this for initialization
         void Awake()
         {
@@ -38,6 +43,16 @@ namespace GroundControl
             m_itemTilePool = GetComponent<GameObjectPool>();
         }
 
+        private void OnEnable()
+        {
+            GroundControlGUI.BuyingAllowedEvent += BuyingAllowed;
+        }
+
+        private void OnDisable()
+        {
+            GroundControlGUI.BuyingAllowedEvent -= BuyingAllowed;
+        }
+
         public int GetCost(ECargoItem item)
         {
             return m_shopItemsDictionary[item].cost;
@@ -45,6 +60,10 @@ namespace GroundControl
         
         public void BuyItem(string itemToBuy)
         {
+            if(!m_canBuy) {
+                return;
+            }
+
             ECargoItem item = m_stringKeys[itemToBuy.ToUpper()];
             CargoItemProperties itemProperties = m_shopItemsDictionary[item];
 
@@ -60,6 +79,15 @@ namespace GroundControl
                     itemTile.SetParent(m_gui.HeldTileParent);
                     tileObject.SetActive(true);
                 }
+            }
+        }
+
+        private void BuyingAllowed(bool allowed)
+        {
+            m_canBuy = allowed;
+            for(int i = 0; i < m_shopButtons.Length; i++)
+            {
+                m_shopButtons[i].interactable = allowed;
             }
         }
     }

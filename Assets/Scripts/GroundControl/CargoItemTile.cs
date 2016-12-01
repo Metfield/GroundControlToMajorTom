@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -9,8 +10,17 @@ namespace GroundControl
         [SerializeField]
         private Vector3 m_dragOffset;
 
+        [Serializable]
+        private class TileAudioSfx
+        {
+            public AudioClip grabSfx;
+        }
+
         [SerializeField]
-        private AudioSource m_audio;
+        private TileAudioSfx m_sfx;
+
+        [SerializeField]
+        private AudioSource m_audioSource;
 
         private bool m_selected;
         private RectTransform m_rectTransform;
@@ -65,6 +75,8 @@ namespace GroundControl
             // Tile must be paranted to the root canvas object
             // Otherwise the tile will be wrongly positioned
             m_rectTransform.SetParent(m_gui.transform);
+
+            m_audioSource.PlayOneShot(m_sfx.grabSfx);
 
             if (GrabbedEvent != null)
             {

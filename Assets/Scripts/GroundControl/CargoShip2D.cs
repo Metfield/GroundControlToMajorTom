@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using Util;
 
@@ -37,6 +38,18 @@ namespace GroundControl
 
         [SerializeField]
         private float m_accelerationTime = 1.0f;
+
+        [Serializable]
+        private class CargoShip2DSfx
+        {
+            public AudioClip launchSfx;
+        }
+
+        [SerializeField]
+        private CargoShip2DSfx m_sfx;
+
+        [SerializeField]
+        private AudioSource m_audioSource;
 
         private float m_groundLevel;
 
@@ -209,6 +222,7 @@ namespace GroundControl
                 m_groundLevel = Vector3.Distance(m_transform.position, m_orbit.GetOrbitPoint());
                 m_timer.Reset();
                 m_timer.Start();
+                m_audioSource.PlayOneShot(m_sfx.launchSfx);
             }
         }
 

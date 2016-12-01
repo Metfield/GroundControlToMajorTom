@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 namespace GroundControl
@@ -10,6 +11,17 @@ namespace GroundControl
         private float m_scaleFactor = 1.0f;
         [SerializeField]
         private float m_scaleTime = 1.0f;
+
+        [Serializable]
+        private class ISSSfx
+        {
+            public AudioClip collectCargoShipSfx;
+        }
+
+        [SerializeField]
+        private ISSSfx m_sfx;
+        [SerializeField]
+        private AudioSource m_audioSource;
 
         private Orbit2D m_orbit;
 
@@ -48,6 +60,7 @@ namespace GroundControl
             Vector3 targetScale = m_intitialScale * m_scaleFactor;
             float halfTime = m_scaleTime * 0.5f;
             float timer = 0.0f;
+            m_audioSource.PlayOneShot(m_sfx.collectCargoShipSfx);
             while (timer <= halfTime)
             {
                 Vector3 currentScale = Vector3.Lerp(m_intitialScale, targetScale, timer / halfTime);
