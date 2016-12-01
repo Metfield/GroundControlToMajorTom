@@ -5,6 +5,7 @@ using Shared;
 
 namespace GroundControl
 {
+    // GroundControlManager needs to be executed last in ScriptExecutionOrder
     public class GroundControlManager : Singleton<GroundControlManager>
     {
         [SerializeField]
@@ -33,17 +34,17 @@ namespace GroundControl
         private GameStateManager m_gameState;
         private GroundControlPlayer m_player;
         private GroundControlGUI m_gui;
-        
 
-        // GroundControlManager's initialization requiers that m_cargoShipSpawner is already initialized.
-        // CargoShipSpawner is initialized in its Awake. By initializing GroundControlManager in Start we 
-        // ensure that the spawner is ready.
-        private void Start()
+        private StateMachine m_stateMachine;
+        
+        private void Awake()
         {
             m_gameState = GameStateManager.Instance;
             m_player = new GroundControlPlayer(m_initialMoney);
             m_launchTimer = new Timer();
             m_gui = GroundControlGUI.Instance;
+            
+            m_stateMachine = new StateMachine(null, null, SetupGame, GameStartUpdate, null, GameStateUpdate, GameOver, null);
         }
         
         private void OnEnable()
@@ -51,8 +52,8 @@ namespace GroundControl
             // Subscribe to events
             CargoMenu.CargoLoadedEvent += CargoLoaded;
             CargoMenu.CargoUnloadedEvent += CargoUnoaded;
-            MissionTime.TimesUpEvent += GameOver;
-            GameStateManager.NewStateEvent += HandleNewState;
+            MissionTime.TimesUpEvent += TimesUp;
+            GameStateManager.NewStateEvent += m_stateMachine.HandleNewState;
         }
 
         private void OnDisable()
@@ -60,17 +61,19 @@ namespace GroundControl
             // Unsubscribe to events
             CargoMenu.CargoLoadedEvent -= CargoLoaded;
             CargoMenu.CargoUnloadedEvent -= CargoUnoaded;
-            MissionTime.TimesUpEvent -= GameOver;
-            GameStateManager.NewStateEvent -= HandleNewState;
+            MissionTime.TimesUpEvent -= TimesUp;
+            GameStateManager.NewStateEvent -= m_stateMachine.HandleNewState;
         }
 
         private void Update()
         {
-            if(m_gameState.CurrentState == EGameState.Game)
-            {
-                UpdateLaunch();
-                UpdateIncome();
-            }
+            m_stateMachine.Update();
+        }
+        
+        private void GameStateUpdate()
+        {
+            UpdateLaunch();
+            UpdateIncome();
         }
 
         private void UpdateLaunch()
@@ -227,13 +230,17 @@ namespace GroundControl
             return position;
         }
 
+        private void TimesUp()
+        {
+            m_gameState.SetNewState(EGameState.GameOver);
+        }
+        
         private void GameOver()
         {
             // TODO: Game over stuff.
             m_shipToLaunch = null;
             m_cargoShipSpawner.Reset();
             LaunchButtonInteractable(false);
-            m_gameState.SetNewState(EGameState.GameOver);
         }
 
         public EGameState GetState()
@@ -246,6 +253,9 @@ namespace GroundControl
             return m_shipToLaunch != null;
         }
         
+        /// <summary>
+        /// Setup the game to its initial values
+        /// </summary>
         private void SetupGame()
         {
             m_player.SetMoney(m_initialMoney);
@@ -253,30 +263,11 @@ namespace GroundControl
             SetIncomeTime();
             ResetLaunchCost();
             PrepareCargoShipForLaunch();
-
-            m_gameState.SetNewState(EGameState.Game);
         }
 
-        private void HandleNewState(EGameState state)
+        private void GameStartUpdate()
         {
-            switch (state)
-            {
-                case EGameState.WaitingForPlayers:
-                    // Do nothing
-                    break;
-                case EGameState.StartingGame:
-                    SetupGame();
-                    break;
-                case EGameState.Game:
-                    // Do nothing
-                    break;
-                case EGameState.GameOver:
-                    // Do nothing
-                    break;
-                default:
-                    // Do nothing
-                    break;
-            }
+            m_gameState.SetNewState(EGameState.Game);
         }
     }
 }

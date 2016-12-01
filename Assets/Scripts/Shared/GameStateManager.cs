@@ -13,7 +13,7 @@ namespace Shared
         public delegate void NewGameState(EGameState state);
         public static event NewGameState NewStateEvent;
 
-        private void Start()
+        private void Awake()
         {
             SetNewState(EGameState.WaitingForPlayers);
         }
