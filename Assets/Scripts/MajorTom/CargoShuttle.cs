@@ -3,6 +3,22 @@ using System.Collections;
 
 public class CargoShuttle : MonoBehaviour
 {
+    [System.Serializable]
+    private class ShuttleSpawnVariables
+    {
+        // An offset from the Canadarms position that the shuttle will target
+        public float offsetX = 12.0f;
+        public float offsetY = 9.0f;
+
+        // Random range around the offset
+        public float ranomMinRangeX = -1f;
+        public float ranomMaxRangeX = 1f;
+        public float ranomMinRangeY = -1f;
+        public float ranomMaxRangeY = 1f;
+    }
+    [SerializeField]
+    private ShuttleSpawnVariables spawnVariables;
+
     // Self rigid body
     private Rigidbody cargoRigidBody;
 
@@ -22,6 +38,10 @@ public class CargoShuttle : MonoBehaviour
     // Shuttle's isolated speed
     private float shuttleSpeed;
 
+    [SerializeField]
+    // The force the cargo ship is ejected with when it undocks
+    private float ejectForce = 3.0f;
+
     // Spawning poing of the shuttle
     private Vector3 origin;
 
@@ -29,7 +49,7 @@ public class CargoShuttle : MonoBehaviour
     private bool isDocking;
 
     // Interpolation target variables
-    private Vector3 targetDockPösition;
+    private Vector3 targetDockPosition;
     private Quaternion targetDockRotation;
 
     // Interpolation starting variables
@@ -136,7 +156,7 @@ public class CargoShuttle : MonoBehaviour
             else
             {
                 // Check if we still need to interpolate            
-                if (!Vector3.Equals(transform.position, targetDockPösition) && !Quaternion.Equals(transform.rotation, targetDockRotation))
+                if (!Vector3.Equals(transform.position, targetDockPosition) && !Quaternion.Equals(transform.rotation, targetDockRotation))
                 {
                     RunDockingInterpolationAnimation();
                 }
@@ -161,7 +181,7 @@ public class CargoShuttle : MonoBehaviour
                 if(isShuttleReturningToEarth == true)
                 {                    
                     cargoRigidBody.isKinematic = false;
-                    cargoRigidBody.AddForce(0, 30, 0);
+                    cargoRigidBody.AddForce(0, 3, 0);
                     transform.Rotate(0, 0.5f, 0);
 
                     // Disable collisions
@@ -199,7 +219,7 @@ public class CargoShuttle : MonoBehaviour
         float step = coveredDistance / interpolationPositionDistance;
 
         // Interpolate position
-        transform.position = Vector3.Lerp(initialInterpolationPosition, targetDockPösition, step);
+        transform.position = Vector3.Lerp(initialInterpolationPosition, targetDockPosition, step);
 
         // Now handle rotation        
         rotationTimer += Time.deltaTime;
@@ -229,23 +249,20 @@ public class CargoShuttle : MonoBehaviour
         isDocked = false;
         waitingForCoroutine = false;
     }
-
-    private const int x_offset = 120;
-    private const int y_offset = 40;
-
-    private const int raise_above_arm_base = 50;
-
+    
     public void SpawnShuttleInScene(Vector3 origin, float offset, bool isWithinReach)
     {
-        offset = (Random.value * 2) - 1;
+        // Calculate an offset from the target position
+        float offsetX = Random.Range(spawnVariables.ranomMinRangeX, spawnVariables.ranomMinRangeX) + spawnVariables.offsetX;
+        float offsetY = Random.Range(spawnVariables.ranomMinRangeY, spawnVariables.ranomMinRangeY) + spawnVariables.offsetY;
 
         // Set position to spawn point's origin
         transform.position = origin;        
 
         // Move the targets location based on launch accuracy
         Vector3 target = canadarm.transform.position;
-        target.x += (offset * x_offset);
-        target.y += raise_above_arm_base + ((offset + 0.8f) * y_offset);
+        target.x += offsetX;
+        target.y += offsetY;
 
         // Get normalized velocity
         velocity = -(transform.position - target).normalized;
@@ -253,17 +270,15 @@ public class CargoShuttle : MonoBehaviour
         // Finally enable the shuttle
         gameObject.SetActive(true);
     }
-
-    private const int raise_above_dock_station = 35;
-
+    
     public void DockingHasBegan(Vector3 lockPosition)
     {
         // Start docking process
         isDocking = true;
 
         // Set docking position variable
-        targetDockPösition = lockPosition;
-        targetDockPösition.y += 35;
+        targetDockPosition = lockPosition;
+        targetDockPosition.y += 3.5f;
 
         // Make object a kinematic orphan :'( 
         cargoRigidBody.isKinematic = true;
@@ -278,7 +293,7 @@ public class CargoShuttle : MonoBehaviour
         initialInterpolationRotation = transform.rotation;
 
         // Set the distance between start and end points
-        interpolationPositionDistance = Vector3.Distance(initialInterpolationPosition, targetDockPösition);
+        interpolationPositionDistance = Vector3.Distance(initialInterpolationPosition, targetDockPosition);
 
         // Set initial time stamp
         interpolationStartTime = Time.time;
