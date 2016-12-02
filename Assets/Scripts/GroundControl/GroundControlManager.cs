@@ -35,7 +35,7 @@ namespace GroundControl
         private GroundControlPlayer m_player;
         private GroundControlGUI m_gui;
 
-        private StateMachine m_stateMachine;
+        private StateMachine<EGameState> m_stateMachine;
         
         private void Awake()
         {
@@ -43,8 +43,13 @@ namespace GroundControl
             m_player = new GroundControlPlayer(m_initialMoney);
             m_launchTimer = new Timer();
             m_gui = GroundControlGUI.Instance;
-            
-            m_stateMachine = new StateMachine(null, null, SetupGame, GameStartUpdate, null, GameStateUpdate, GameOver, null);
+
+            // TODO: Add other states
+            // Set up the state machine
+            m_stateMachine = new StateMachine<EGameState>();
+            m_stateMachine.AddState(EGameState.StartingGame, SetupGame, GameStartUpdate);
+            m_stateMachine.AddState(EGameState.Game, null, GameStateUpdate);
+            m_stateMachine.AddState(EGameState.GameOver, GameOver, null);
         }
         
         private void OnEnable()

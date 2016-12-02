@@ -1,117 +1,91 @@
-﻿using UnityEngine;
-using System.Collections;
-using Util;
+﻿using System.Collections.Generic;
 
 namespace Shared
 {
-    public class StateMachine
+    public class StateMachine<T>
     {
         // On new state are runned once when a new state is set
-        // DO NOT change state immediatly in a OnNewState
+        // DO NOT change state immediatly in a OnNewState.
         public delegate void OnNewState();
 
         // State update are runned every frame while the state is set
         public delegate void StateUpdate();
 
-        private OnNewState m_onWaitForPlayer;
-        private OnNewState m_onStartGame;
-        private OnNewState m_onGame;
-        private OnNewState m_onGameOver;
-
-        private StateUpdate m_waitForPlayerUpdate;
-        private StateUpdate m_startGameUpdate;
-        private StateUpdate m_gameUpdate;
-        private StateUpdate m_gameOverUpdate;
-
+        private Dictionary<T, OnNewState> m_onNewStates;
+        private Dictionary<T, StateUpdate> m_stateUpdates;
+        
         private StateUpdate m_currentUpdate;
 
-        private EGameState m_state;
+        private T m_currentState;
+        private T CurrentState {
+            get { return m_currentState; }
+        }
 
-        public StateMachine(
-            OnNewState onWaitForPlayer, StateUpdate waitForPlayerUpdate,
-            OnNewState onStartGame, StateUpdate startGameUpdate,
-            OnNewState onGame, StateUpdate gameUpdate,
-            OnNewState onGameOver, StateUpdate gameOverUpdate
-        )
+        public StateMachine()
         {
-            m_onWaitForPlayer = onWaitForPlayer;
-            SetDummyIfNull(ref m_onWaitForPlayer);
-
-            m_onStartGame = onStartGame;
-            SetDummyIfNull(ref m_onStartGame);
-
-            m_onGame = onGame;
-            SetDummyIfNull(ref m_onGame);
-
-            m_onGameOver = onGameOver;
-            SetDummyIfNull(ref m_onGameOver);
-
-            m_waitForPlayerUpdate = waitForPlayerUpdate;
-            SetDummyIfNull(ref m_waitForPlayerUpdate);
-
-            m_startGameUpdate = startGameUpdate;
-            SetDummyIfNull(ref m_startGameUpdate);
-
-            m_gameUpdate = gameUpdate;
-            SetDummyIfNull(ref m_gameUpdate);
-
-            m_gameOverUpdate = gameOverUpdate;
-            SetDummyIfNull(ref m_gameOverUpdate);
+            m_onNewStates = new Dictionary<T, OnNewState>();
+            m_stateUpdates = new Dictionary<T, StateUpdate>();
         }
 
         /// <summary>
-        /// Set to a default empty lambda expression if not defined
+        /// Add a state to the machine
         /// </summary>
+        /// <param name="state"></param>
         /// <param name="onState"></param>
-        private void SetDummyIfNull(ref OnNewState onState)
+        /// <param name="stateUpdate"></param>
+        public void AddState(T state, OnNewState onState, StateUpdate stateUpdate)
         {
-            if(onState == null) {
-                onState = () => { };
+            // Add the on new state function
+            if(onState != null) {
+                m_onNewStates.Add(state, onState);
+            }
+            else {
+                // Empty dummy function if on new state is not defined
+                m_onNewStates.Add(state, () => { });
+            }
+
+            // Add the state update function
+            if (stateUpdate != null) {
+                m_stateUpdates.Add(state, stateUpdate);
+            }
+            else {
+                // Empty dummy function if state update is not defined
+                m_stateUpdates.Add(state, () => { });
             }
         }
-
+        
         /// <summary>
-        /// Set to a default empty lambda expression if not defined
+        /// Update the current state
         /// </summary>
-        /// <param name="onState"></param>
-        private void SetDummyIfNull(ref StateUpdate stateUpdate)
-        {
-            if (stateUpdate == null) {
-                stateUpdate = () => { };
-            }
-        }
-
         public void Update()
         {
             m_currentUpdate();
         }
 
-        public void HandleNewState(EGameState state)
+        /// <summary>
+        /// Handle the transition to a new state
+        /// </summary>
+        /// <param name="state"></param>
+        public void HandleNewState(T state)
         {
-            switch (state)
-            {
-                case EGameState.WaitingForPlayers:
-                    m_onWaitForPlayer();
-                    m_currentUpdate = m_waitForPlayerUpdate;
-                    break;
-                case EGameState.StartingGame:
-                    m_onStartGame();
-                    m_currentUpdate = m_startGameUpdate;
-                    break;
-                case EGameState.Game:
-                    m_onGame();
-                    m_currentUpdate = m_gameUpdate;
-                    break;
-                case EGameState.GameOver:
-                    m_onGameOver();
-                    m_currentUpdate = m_gameOverUpdate;
-                    break;
-                default:
-                    Log.Error(state.ToString() + " not implemented");
-                    m_currentUpdate = () => { };
-                    break;
+            // Call the on new state
+            OnNewState onNewState = m_onNewStates[state];
+            if(onNewState != null) {
+                onNewState();
             }
-            m_state = state;
+
+            // Set the state update function
+            StateUpdate stateUpdate = m_stateUpdates[state];
+            if(stateUpdate != null) {
+                m_currentUpdate = stateUpdate;
+            }
+            else {
+                // Empty dummy function if not defined
+                m_currentUpdate = () => { };
+            }
+
+            // Store the current state
+            m_currentState = state;
         }
     }
 }

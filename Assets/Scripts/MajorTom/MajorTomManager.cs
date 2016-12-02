@@ -7,15 +7,20 @@ public class MajorTomManager : Singleton<MajorTomManager>
     CargoShuttleSpawner cargoShuttleSpawner;
 
     private GameStateManager m_gameStateManager;
-    private StateMachine m_stateMachine;
+    private StateMachine<EGameState> m_stateMachine;
 
     private void Awake()
     {
         cargoShuttleSpawner = CargoShuttleSpawner.instance;
 
         m_gameStateManager = GameStateManager.Instance;
-        // TODO: Add functions to the state machine
-        m_stateMachine = new StateMachine(null, null, SetupGame, GameStartUpdate, null, GameUpdate, GameOver, null);
+
+        // TODO: Add other states
+        // Set up the state machine
+        m_stateMachine = new StateMachine<EGameState>();
+        m_stateMachine.AddState(EGameState.StartingGame, SetupGame, GameStartUpdate);
+        m_stateMachine.AddState(EGameState.Game, null, GameUpdate);
+        m_stateMachine.AddState(EGameState.GameOver, GameOver, null);
     }
 
     private void OnEnable()
