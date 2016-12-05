@@ -19,6 +19,16 @@ public class CargoShuttle : MonoBehaviour
     [SerializeField]
     private ShuttleSpawnVariables spawnVariables;
 
+    // Visual effects that can be seen on the screens in the Cupola.
+    [System.Serializable]
+    private class ShuttleScreenVfx
+    {
+        public GameObject grappleFixtureVfx;
+        public GameObject dockingTipVfx;
+    }
+    [SerializeField]
+    private ShuttleScreenVfx m_screenVfx;
+
     // Self rigid body
     private Rigidbody cargoRigidBody;
 
@@ -229,6 +239,11 @@ public class CargoShuttle : MonoBehaviour
     public void SetIsGrappled(bool value)
     {        
         isGrappled = value;
+
+        // Set the screen vfx
+        SetGrappleFixtureVfx(!value);
+        SetDockingTipVfx(value);
+
     }
 
     void OnEnable()
@@ -239,6 +254,10 @@ public class CargoShuttle : MonoBehaviour
         // Re-enable collisions
         cargoRigidBody.detectCollisions = true;
         cargoRigidBody.isKinematic = true;
+
+        // Set the screen vfx
+        SetGrappleFixtureVfx(true);
+        SetDockingTipVfx(false);
     }
 
     void OnDisable()
@@ -297,5 +316,19 @@ public class CargoShuttle : MonoBehaviour
 
         // Set initial time stamp
         interpolationStartTime = Time.time;
+
+        // Disable screen vfx
+        SetGrappleFixtureVfx(false);
+        SetDockingTipVfx(false);
+    }
+
+    public void SetGrappleFixtureVfx(bool active)
+    {
+        m_screenVfx.grappleFixtureVfx.SetActive(active);
+    }
+
+    public void SetDockingTipVfx(bool active)
+    {
+        m_screenVfx.dockingTipVfx.SetActive(active);
     }
 }
