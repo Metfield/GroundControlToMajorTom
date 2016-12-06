@@ -54,6 +54,8 @@ public class Canadarm : MonoBehaviour
     // Initially null, sets referenced to grappled shuttle
     GameObject cargoShuttle;
 
+    private MajorTomManager m_majorTomManager;
+
     // Use this for initialization
     void Start ()
     {
@@ -68,6 +70,8 @@ public class Canadarm : MonoBehaviour
         // Set variables
         grapplerFixtureContact = false;
         isTriggerPressed = false;
+
+        m_majorTomManager = MajorTomManager.Instance;
     }
 	
     void FixedUpdate()
@@ -108,15 +112,13 @@ public class Canadarm : MonoBehaviour
             {
                 if (wasTriggerDown)
                 {
-                    cargoShuttle.SendMessage("SetIsGrappled", true);
-                    wasTriggerDown = false;
+                    GrabCargoShuttle();
                 }
             }
 
             if (wasTriggerLift)
             {
-                cargoShuttle.SendMessage("SetIsGrappled", false);
-                wasTriggerLift = false;
+                ReleaseCargoShuttle();
             }
         }
     }
@@ -161,12 +163,32 @@ public class Canadarm : MonoBehaviour
     {
         // Set reference to the grabbed shuttle
         cargoShuttle = shuttle;
-        grapplerFixtureContact = true;        
+        grapplerFixtureContact = true;
+        
+        // Notify that we have contact
+        m_majorTomManager.GrappleFixtureContact(true);
     }
 
     void ClearGrapplerFixtureContact()
     {
         grapplerFixtureContact = false;
         cargoShuttle = null;
+
+        // Notify that we have lost contact
+        m_majorTomManager.GrappleFixtureContact(false);
+    }
+
+    private void GrabCargoShuttle()
+    {
+        cargoShuttle.SendMessage("SetIsGrappled", true);
+        wasTriggerDown = false;
+        m_majorTomManager.ShuttleGrabbed();
+    }
+
+    private void ReleaseCargoShuttle()
+    {
+        cargoShuttle.SendMessage("SetIsGrappled", false);
+        wasTriggerLift = false;
+        m_majorTomManager.ShuttleReleased();
     }
 }
