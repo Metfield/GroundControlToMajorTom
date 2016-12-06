@@ -9,6 +9,18 @@ public class MajorTomManager : Singleton<MajorTomManager>
     private GameStateManager m_gameStateManager;
     private StateMachine<EGameState> m_stateMachine;
 
+    // Event used when the Canadarm gets or loses contact with a cargo shuttle's grapple fixture
+    public delegate void GrappleContact(bool contact);
+    public static event GrappleContact GrappleContactEvent;
+
+    // Event when the Canadarm grabs a cargo shuttle
+    public delegate void ShuttleGrab();
+    public static event ShuttleGrab ShuttleGrabEvent;
+
+    // Event when the Canadarm releases a cargo shuttle
+    public delegate void ShuttleRelease();
+    public static event ShuttleRelease ShuttleReleaseEvent;
+
     private void Awake()
     {
         cargoShuttleSpawner = CargoShuttleSpawner.instance;
@@ -60,5 +72,30 @@ public class MajorTomManager : Singleton<MajorTomManager>
     private void GameOver()
     {
         // TODO: Implement
+    }
+
+    public void GrappleFixtureContact(bool contact)
+    {
+        // Trigger a grapple contact event
+        if(GrappleContactEvent != null)
+        {
+            GrappleContactEvent(contact);
+        }
+    }
+
+    public void ShuttleGrabbed()
+    {
+        if(ShuttleGrabEvent != null)
+        {
+            ShuttleGrabEvent();
+        }
+    }
+
+    public void ShuttleReleased()
+    {
+        if (ShuttleReleaseEvent != null)
+        {
+            ShuttleReleaseEvent();
+        }
     }
 }
