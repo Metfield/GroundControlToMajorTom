@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using System;
-using System.Linq;
+using Shared;
 
 namespace GroundControl
 {
@@ -285,6 +284,31 @@ namespace GroundControl
                     m_cargoItemSlots[i] = null;
                 }
             }
+        }
+
+        /// <summary>
+        /// Get an array with the type of cargo in the menu.
+        /// Will create and return a new ECagoItem array with
+        /// the size of the menu's max capacity.
+        /// Empty slots will be defined as ECargoItem.Empty
+        /// </summary>
+        /// <returns></returns>
+        public ECargoItem[] GetCargoContent()
+        {
+            ECargoItem[] cargoItems = new ECargoItem[m_maxCapacity];
+            for(int i = 0; i < m_maxCapacity; i++)
+            {
+                CargoItemTile cargoTile = m_cargoItemSlots[i];
+                if(cargoTile != null)
+                {
+                    cargoItems[i] = cargoTile.GetItemType();
+                }
+                else
+                {
+                    cargoItems[i] = ECargoItem.Empty;
+                }
+            }
+            return cargoItems;
         }
     }
 }

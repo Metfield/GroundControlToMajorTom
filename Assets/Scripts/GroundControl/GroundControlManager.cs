@@ -154,6 +154,10 @@ namespace GroundControl
         {
             m_gui.SetLaunchButtonInteractable(false);
 
+            ECargoItem[] cargo = m_gui.GetCargo();
+            m_shipToLaunch.SetCargo(cargo);
+
+            // Update money
             UpdatePlayerMoney(-m_currentLaunchCost);
             UpdateMoneyUI(m_player.GetMoney());
             ResetLaunchCost();

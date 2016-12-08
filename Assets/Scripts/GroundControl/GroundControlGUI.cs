@@ -153,6 +153,11 @@ namespace GroundControl
                 BuyingAllowedEvent(present);
             }
         }
+
+        public ECargoItem[] GetCargo()
+        {
+            return m_cargoMenu.GetCargoContent();
+        }
     }
 }
 

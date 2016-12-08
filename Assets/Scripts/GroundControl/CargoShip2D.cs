@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using Util;
+using Shared;
 
 namespace GroundControl
 {
@@ -59,6 +60,8 @@ namespace GroundControl
         private ECargoShipState m_state;
 
         private Timer m_timer;
+
+        private ECargoItem[] m_cargo;
 
         private void Awake()
         {
@@ -233,6 +236,24 @@ namespace GroundControl
         public void SetTransformToOrbit(Transform toOrbit)
         {
             m_orbit.SetTransformToOrbit(toOrbit);
+        }
+
+        /// <summary>
+        /// Get the ship's cargo
+        /// </summary>
+        /// <returns></returns>
+        public ECargoItem[] GetCargo()
+        {
+            return m_cargo;
+        }
+
+        /// <summary>
+        /// Set the the ship's cargo
+        /// </summary>
+        /// <param name="cargo"></param>
+        public void SetCargo(ECargoItem[] cargo)
+        {
+            m_cargo = cargo;
         }
     }
 }
