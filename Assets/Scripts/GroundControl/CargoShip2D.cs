@@ -4,6 +4,7 @@ using System.Collections;
 using Util;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
+using Shared;
 
 namespace GroundControl
 {
@@ -63,6 +64,8 @@ namespace GroundControl
         private Timer m_timer;
 
         public NetworkClient client;     
+
+        private ECargoItem[] m_cargo;
 
         private void Awake()
         {
@@ -245,6 +248,24 @@ namespace GroundControl
         public void SetTransformToOrbit(Transform toOrbit)
         {
             m_orbit.SetTransformToOrbit(toOrbit);
+        }
+
+        /// <summary>
+        /// Get the ship's cargo
+        /// </summary>
+        /// <returns></returns>
+        public ECargoItem[] GetCargo()
+        {
+            return m_cargo;
+        }
+
+        /// <summary>
+        /// Set the the ship's cargo
+        /// </summary>
+        /// <param name="cargo"></param>
+        public void SetCargo(ECargoItem[] cargo)
+        {
+            m_cargo = cargo;
         }
     }
 }

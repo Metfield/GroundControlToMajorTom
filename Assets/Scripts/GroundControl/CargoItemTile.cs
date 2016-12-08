@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using UnityEngine.UI;
+using Shared;
 
 namespace GroundControl
 {
@@ -154,6 +155,11 @@ namespace GroundControl
         public CargoItemProperties GetProperties()
         {
             return m_properties;
+        }
+
+        public ECargoItem GetItemType()
+        {
+            return m_properties.item;
         }
     }
 }
