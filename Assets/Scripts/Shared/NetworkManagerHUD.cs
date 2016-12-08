@@ -19,7 +19,7 @@ namespace UnityEngine.Networking
         public int offsetY;
 
         private int extraWidth, extraHeight;
-        public bool kycklingHardcode;
+        public bool kycklingHardcode = false;
 
         // Runtime variable
         bool m_ShowServer;
@@ -38,7 +38,7 @@ namespace UnityEngine.Networking
             }
             else
             {
-                manager.StartHost();
+                //manager.StartHost();
             }
         }
 

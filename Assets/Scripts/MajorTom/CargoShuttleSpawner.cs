@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
 namespace MajorTom
 {
-    public class CargoShuttleSpawner : MonoBehaviour
+    public class CargoShuttleSpawner : NetworkBehaviour
     {
         [SerializeField]
         public Util.GameObjectPool cargoShuttlePool;
