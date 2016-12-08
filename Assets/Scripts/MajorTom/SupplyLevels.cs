@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Shared;
+using Util;
+using System.Linq;
 
 namespace MajorTom
 {
@@ -16,6 +18,7 @@ namespace MajorTom
             public float deteriationRate;   // Deteriation rate in units per seconds
             [Range(0f, 100f)]
             public float initialValue;      // Initial value for the supply
+            public float valuePerUnit;      // Value for a single supply unit from the cargo shuttle
             public float Value              // Current value of the supply
             {
                 get { return supplyBar.GetValue(); }
@@ -37,13 +40,16 @@ namespace MajorTom
         private SupplyLevel m_oxygenSupply;
         [SerializeField]
         private SupplyLevel m_equipmentSupply;
-
+        
+        // If supplies are refilled
+        private bool m_resupplying = false;
+        
         // Max value fo supplies
         private const float MAX_SUPPLY_VALUE = 100f;
 
         // Dictionary fo easy look up
         private Dictionary<ECargoItem, SupplyLevel> m_supplies;
-
+        
         // Initialize in start since supply bar initialize in Awake
         private void Start()
         {
@@ -59,15 +65,19 @@ namespace MajorTom
             m_supplies.Add(ECargoItem.Food, m_foodSupply);
             m_supplies.Add(ECargoItem.Oxygen, m_oxygenSupply);
             m_supplies.Add(ECargoItem.Equipment, m_equipmentSupply);
+            
         }
         
         private void Update()
         {
-            // Deteriorate the supplies
-            DeteriorateSupply(ECargoItem.Water);
-            DeteriorateSupply(ECargoItem.Food);
-            DeteriorateSupply(ECargoItem.Oxygen);
-            DeteriorateSupply(ECargoItem.Equipment);
+            if(!m_resupplying)
+            {
+                // Deteriorate the supplies if we are not resupplying
+                DeteriorateSupply(ECargoItem.Water);
+                DeteriorateSupply(ECargoItem.Food);
+                DeteriorateSupply(ECargoItem.Oxygen);
+                DeteriorateSupply(ECargoItem.Equipment);
+            }
         }
         
         /// <summary>
@@ -95,6 +105,32 @@ namespace MajorTom
             {
                 supply.Value = supply.Value + amount;
             }
+        }
+        
+        public void Resupply(ECargoItem[] supplies, float resupplyTime)
+        {
+            StartCoroutine(ResupplyRoutine(supplies, resupplyTime));
+        }
+
+        private IEnumerator ResupplyRoutine(ECargoItem[] supplies, float resupplyTime)
+        {
+            // Set a flag that we are resupplying
+            m_resupplying = true;
+            
+            // TODO: Add fekking interpolation 
+
+            foreach(ECargoItem item in supplies)
+            {
+                if(m_supplies.ContainsKey(item))
+                {
+                    AddSupplies(item, m_supplies[item].valuePerUnit);
+                }
+            }
+
+            // Set a the flag that resupplying is done
+            m_resupplying = false;
+
+            yield return null;
         }
     }
 }
