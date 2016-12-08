@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
+using UnityEngine.Networking.NetworkSystem;
 
-
-public class CargoShuttleSpawner : MonoBehaviour
+public class CargoShuttleSpawner : NetworkBehaviour
 {
     [SerializeField]
     public Util.GameObjectPool cargoShuttlePool;
@@ -21,6 +22,9 @@ public class CargoShuttleSpawner : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        // Register message callback
+        NetworkServer.RegisterHandler((short)Shared.Defines.NET_ID.CLIENT, OnServerReadyToBeginMessage);
     }
 
     /// <summary>
@@ -51,5 +55,13 @@ public class CargoShuttleSpawner : MonoBehaviour
     private GameObject GetObjectFromPool()
     {
         return cargoShuttlePool.GetPooledObject();
+    }
+
+    void OnServerReadyToBeginMessage(NetworkMessage netMsg)
+    {
+        Debug.Log("FUCK MY ASS!");
+
+        IntegerMessage beginMessage = netMsg.ReadMessage<IntegerMessage>();
+        Debug.Log("received OnServerReadyToBeginMessage " + beginMessage.value);
     }
 }

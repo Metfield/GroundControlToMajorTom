@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using Util;
+using UnityEngine.Networking;
+using UnityEngine.Networking.NetworkSystem;
 
 namespace GroundControl
 {
@@ -14,7 +16,7 @@ namespace GroundControl
     }
 
     [RequireComponent(typeof(Orbit2D))]
-    public class CargoShip2D : MonoBehaviour
+    public class CargoShip2D : NetworkBehaviour
     {
         [SerializeField]
         private float m_maxVelocity = 1.0f;
@@ -60,11 +62,15 @@ namespace GroundControl
 
         private Timer m_timer;
 
+        public NetworkClient client;     
+
         private void Awake()
         {
             m_orbit = this.GetComponent<Orbit2D>();
             m_transform = this.transform;
             m_timer = new Timer();
+
+            client = NetworkManager.singleton.client;
         }
 
         private void OnEnable()
@@ -215,6 +221,12 @@ namespace GroundControl
         /// </summary>
         public void Launch()
         {
+            IntegerMessage msg = new IntegerMessage(666);
+         
+
+            client.Send((short)Shared.Defines.NET_ID.CLIENT, msg);
+            
+
             if(m_state == ECargoShipState.Grounded)
             {
                 m_transform.SetParent(null);
