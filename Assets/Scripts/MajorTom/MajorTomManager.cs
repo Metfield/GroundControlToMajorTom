@@ -59,7 +59,8 @@ namespace MajorTom
 
         private void SetupGame()
         {
-            // TODO: Implement 
+            ECargoItem[] dummyCargo = new ECargoItem[6];
+            bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true, dummyCargo);
         }
 
         private void GameStartUpdate()
@@ -71,7 +72,8 @@ namespace MajorTom
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true);
+                ECargoItem[] dummyCargo = new ECargoItem[6];
+                bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true, dummyCargo);
             }
         }
 
