@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
-using UnityEngine.Networking.NetworkSystem;
+using Shared;
+using Util;
+using System;
 
 public class CargoShuttleSpawner : NetworkBehaviour
 {
@@ -24,7 +26,7 @@ public class CargoShuttleSpawner : NetworkBehaviour
         }
 
         // Register message callback
-        NetworkServer.RegisterHandler((short)Shared.Defines.NET_ID.CLIENT, OnServerReadyToBeginMessage);
+        NetworkServer.RegisterHandler((short)Shared.Defines.NET_ID.CLIENT, OnGroundControlMessage);
     }
 
     /// <summary>
@@ -33,7 +35,7 @@ public class CargoShuttleSpawner : NetworkBehaviour
     /// </summary>
     /// <param name="armBaseOffset: Position offset relative to Canadarm's base"></param>
     /// <param name="isWithinReach: Can the player even grab it?"></param>
-    public bool SpawnCargoShuttle(float armBaseOffset, bool isWithinReach)
+    public bool SpawnCargoShuttle(float armBaseOffset, bool isWithinReach, ECargoItem[] cargoManifest)
     {
         GameObject cargoShuttleGameObject =  GetObjectFromPool();
 
@@ -47,7 +49,7 @@ public class CargoShuttleSpawner : NetworkBehaviour
         CargoShuttle cargoShuttleClassObject = cargoShuttleGameObject.GetComponent<CargoShuttle>();
 
         // Call the spawning method in the object along with the related data
-        cargoShuttleClassObject.SpawnShuttleInScene(transform.position, armBaseOffset, isWithinReach);        
+        cargoShuttleClassObject.SpawnShuttleInScene(transform.position, armBaseOffset, isWithinReach, cargoManifest);        
         return true;
     }
 
@@ -57,11 +59,20 @@ public class CargoShuttleSpawner : NetworkBehaviour
         return cargoShuttlePool.GetPooledObject();
     }
 
-    void OnServerReadyToBeginMessage(NetworkMessage netMsg)
-    {
-        Debug.Log("FUCK MY ASS!");
+    /// <summary>
+    /// Receives message from client. This holds the cargo manifest
+    /// and the success ratio of the launch
+    /// </summary>
+    /// <param name="netMsg"></param>
+    void OnGroundControlMessage(NetworkMessage netMsg)
+    {        
+        // Cast network message
+        CargoLaunchMsg msg = netMsg.ReadMessage<CargoLaunchMsg>();
 
-        IntegerMessage beginMessage = netMsg.ReadMessage<IntegerMessage>();
-        Debug.Log("received OnServerReadyToBeginMessage " + beginMessage.value);
+        // Cast integer array to ECargoItem array
+        ECargoItem[] cargoManifest = Array.ConvertAll(msg.cargo, value => (ECargoItem)value);
+
+        // Spawn shuttle!
+        SpawnCargoShuttle(msg.successRatio, true, cargoManifest);        
     }
 }

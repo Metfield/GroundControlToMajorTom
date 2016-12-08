@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Shared;
 
 public class CargoShuttle : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class CargoShuttle : MonoBehaviour
         public GameObject grappleFixtureVfx;
         public GameObject dockingTipVfx;
     }
+
     [SerializeField]
     private ShuttleScreenVfx m_screenVfx;
 
@@ -100,6 +102,8 @@ public class CargoShuttle : MonoBehaviour
 
     // Goodbye shuttle!
     private bool isShuttleReturningToEarth;
+
+    private ECargoItem[] m_cargo;
 
     // Use this for initialization
     void Awake ()
@@ -269,7 +273,7 @@ public class CargoShuttle : MonoBehaviour
         waitingForCoroutine = false;
     }
     
-    public void SpawnShuttleInScene(Vector3 origin, float offset, bool isWithinReach)
+    public void SpawnShuttleInScene(Vector3 origin, float offset, bool isWithinReach, ECargoItem[] cargoManifest)
     {
         // Calculate an offset from the target position
         float offsetX = Random.Range(spawnVariables.ranomMinRangeX, spawnVariables.ranomMinRangeX) + spawnVariables.offsetX;
@@ -285,7 +289,10 @@ public class CargoShuttle : MonoBehaviour
 
         // Get normalized velocity
         velocity = -(transform.position - target).normalized;
-      
+
+        // Set shuttle's cargo
+        SetCargo(cargoManifest);
+
         // Finally enable the shuttle
         gameObject.SetActive(true);
     }
@@ -330,5 +337,14 @@ public class CargoShuttle : MonoBehaviour
     public void SetDockingTipVfx(bool active)
     {
         m_screenVfx.dockingTipVfx.SetActive(active);
+    }
+
+    /// <summary>
+    /// Set the cargo loaded on the shuttle
+    /// </summary>
+    /// <param name="cargo"></param>
+    public void SetCargo(ECargoItem[] cargo)
+    {
+        m_cargo = cargo;
     }
 }

@@ -224,12 +224,6 @@ namespace GroundControl
         /// </summary>
         public void Launch()
         {
-            IntegerMessage msg = new IntegerMessage(666);
-         
-
-            client.Send((short)Shared.Defines.NET_ID.CLIENT, msg);
-            
-
             if(m_state == ECargoShipState.Grounded)
             {
                 m_transform.SetParent(null);
@@ -239,6 +233,8 @@ namespace GroundControl
                 m_timer.Start();
                 m_audioSource.PlayOneShot(m_sfx.launchSfx);
             }
+
+            SendMessageToMajorTom();
         }
 
         /// <summary>
@@ -266,6 +262,25 @@ namespace GroundControl
         public void SetCargo(ECargoItem[] cargo)
         {
             m_cargo = cargo;
+        }
+
+        /// <summary>
+        /// Sends cargo manifest and success ratio message 
+        /// over the network
+        /// </summary>
+        public void SendMessageToMajorTom()
+        {
+            // Create network message 
+            CargoLaunchMsg msg = new CargoLaunchMsg();
+
+            // Cast enum to integers
+            msg.cargo = Array.ConvertAll(GetCargo(), value => (int)value);
+
+            // Fill success ratio variable
+            msg.successRatio = 0;
+
+            // Send message with the cliend ID
+            client.Send((short)Defines.NET_ID.CLIENT, msg);
         }
     }
 }

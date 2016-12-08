@@ -65,7 +65,8 @@ public class MajorTomManager : Singleton<MajorTomManager>
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true);
+            ECargoItem[] dummyCargo = new ECargoItem[6];
+            bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true, dummyCargo);
         }
     }
 
