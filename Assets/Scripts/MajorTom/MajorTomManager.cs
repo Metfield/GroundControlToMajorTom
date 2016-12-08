@@ -2,100 +2,117 @@
 using System.Collections;
 using Shared;
 
-public class MajorTomManager : Singleton<MajorTomManager>
+namespace MajorTom
 {
-    CargoShuttleSpawner cargoShuttleSpawner;
-
-    private GameStateManager m_gameStateManager;
-    private StateMachine<EGameState> m_stateMachine;
-
-    // Event used when the Canadarm gets or loses contact with a cargo shuttle's grapple fixture
-    public delegate void GrappleContact(bool contact);
-    public static event GrappleContact GrappleContactEvent;
-
-    // Event when the Canadarm grabs a cargo shuttle
-    public delegate void ShuttleGrab();
-    public static event ShuttleGrab ShuttleGrabEvent;
-
-    // Event when the Canadarm releases a cargo shuttle
-    public delegate void ShuttleRelease();
-    public static event ShuttleRelease ShuttleReleaseEvent;
-
-    private void Awake()
+    public class MajorTomManager : Singleton<MajorTomManager>
     {
-        cargoShuttleSpawner = CargoShuttleSpawner.instance;
+        // Supply levels of the ISS
+        [SerializeField]
+        private SupplyLevels supplyLevels;
 
-        m_gameStateManager = GameStateManager.Instance;
+        CargoShuttleSpawner cargoShuttleSpawner;
 
-        // TODO: Add other states
-        // Set up the state machine
-        m_stateMachine = new StateMachine<EGameState>();
-        m_stateMachine.AddState(EGameState.StartingGame, SetupGame, GameStartUpdate);
-        m_stateMachine.AddState(EGameState.Game, null, GameUpdate);
-        m_stateMachine.AddState(EGameState.GameOver, GameOver, null);
-    }
+        private GameStateManager m_gameStateManager;
+        private StateMachine<EGameState> m_stateMachine;
 
-    private void OnEnable()
-    {
-        GameStateManager.NewStateEvent += m_stateMachine.HandleNewState;
-    }
+        // Event used when the Canadarm gets or loses contact with a cargo shuttle's grapple fixture
+        public delegate void GrappleContact(bool contact);
+        public static event GrappleContact GrappleContactEvent;
 
-    private void OnDisable()
-    {
-        GameStateManager.NewStateEvent -= m_stateMachine.HandleNewState;
-    }
-    
-	// Update is called once per frame
-	private void Update ()
-    {
-        m_stateMachine.Update();
-    }
+        // Event when the Canadarm grabs a cargo shuttle
+        public delegate void ShuttleGrab();
+        public static event ShuttleGrab ShuttleGrabEvent;
 
-    private void SetupGame()
-    {
-        // TODO: Implement 
-    }
+        // Event when the Canadarm releases a cargo shuttle
+        public delegate void ShuttleRelease();
+        public static event ShuttleRelease ShuttleReleaseEvent;
 
-    private void GameStartUpdate()
-    {
-        m_gameStateManager.SetNewState(EGameState.Game);
-    }
-
-    private void GameUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
+        private void Awake()
         {
-            bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true);
+            cargoShuttleSpawner = CargoShuttleSpawner.instance;
+
+            m_gameStateManager = GameStateManager.Instance;
+
+            // TODO: Add other states
+            // Set up the state machine
+            m_stateMachine = new StateMachine<EGameState>();
+            m_stateMachine.AddState(EGameState.StartingGame, SetupGame, GameStartUpdate);
+            m_stateMachine.AddState(EGameState.Game, null, GameUpdate);
+            m_stateMachine.AddState(EGameState.GameOver, GameOver, null);
         }
-    }
 
-    private void GameOver()
-    {
-        // TODO: Implement
-    }
-
-    public void GrappleFixtureContact(bool contact)
-    {
-        // Trigger a grapple contact event
-        if(GrappleContactEvent != null)
+        private void OnEnable()
         {
-            GrappleContactEvent(contact);
+            GameStateManager.NewStateEvent += m_stateMachine.HandleNewState;
         }
-    }
 
-    public void ShuttleGrabbed()
-    {
-        if(ShuttleGrabEvent != null)
+        private void OnDisable()
         {
-            ShuttleGrabEvent();
+            GameStateManager.NewStateEvent -= m_stateMachine.HandleNewState;
         }
-    }
 
-    public void ShuttleReleased()
-    {
-        if (ShuttleReleaseEvent != null)
+        // Update is called once per frame
+        private void Update()
         {
-            ShuttleReleaseEvent();
+            m_stateMachine.Update();
+        }
+
+        private void SetupGame()
+        {
+            // TODO: Implement 
+        }
+
+        private void GameStartUpdate()
+        {
+            m_gameStateManager.SetNewState(EGameState.Game);
+        }
+
+        private void GameUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true);
+            }
+        }
+
+        private void GameOver()
+        {
+            // TODO: Implement
+        }
+
+        public void GrappleFixtureContact(bool contact)
+        {
+            // Trigger a grapple contact event
+            if (GrappleContactEvent != null)
+            {
+                GrappleContactEvent(contact);
+            }
+        }
+
+        public void ShuttleGrabbed()
+        {
+            if (ShuttleGrabEvent != null)
+            {
+                ShuttleGrabEvent();
+            }
+        }
+
+        public void ShuttleReleased()
+        {
+            if (ShuttleReleaseEvent != null)
+            {
+                ShuttleReleaseEvent();
+            }
+        }
+
+        /// <summary>
+        /// Resupply the ISS
+        /// </summary>
+        /// <param name="cargo">Cargo with supplies</param>
+        /// <param name="resupplyTime">Time to complete the resupply</param>
+        public void ResupplyISS(ECargoItem[] cargo, float resupplyTime)
+        {
+            supplyLevels.Resupply(cargo, resupplyTime);
         }
     }
 }
