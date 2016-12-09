@@ -89,6 +89,39 @@ public class ValueBar : MonoBehaviour
         m_value = Mathf.Clamp(value, 0.0f, m_maxValue);
         float width = Mathf.Clamp(m_valuePerBarLenght * m_value, 0.0f, m_maxBarLenght);
         float height = m_barTransform.sizeDelta.y;
-        m_barTransform.sizeDelta  = new Vector2(width, height);
+        m_barTransform.sizeDelta = new Vector2(width, height);
+
+    }
+
+    /// <summary>
+    /// Interpolates the bar's value over time
+    /// </summary>
+    /// <param name="amount">Amount to interpolate</param>
+    /// <param name="time">Interpolation time in seconds</param>
+    public void InterpolateValue(float amount, float time)
+    {
+        StartCoroutine(InterpolateValueRoutine(amount, time));
+    }
+
+    /// <summary>
+    /// Coroutine for interpolating the value
+    /// </summary>
+    /// <param name="amount"></param>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    private IEnumerator InterpolateValueRoutine(float amount, float time)
+    {
+        Debug.Log("Ammount: " + amount);
+        float initialValue = m_value;
+        float targetValue = Mathf.Clamp(m_value + amount, 0.0f, m_maxValue);
+        float timeFactor = 1.0f / time;
+        float t = 0.0f;
+        while(t <= 1.0f)
+        {
+            t += Time.deltaTime * timeFactor;
+            float value = Mathf.Lerp(initialValue, targetValue, t);
+            SetValue(value);
+            yield return null;
+        }
     }
 }

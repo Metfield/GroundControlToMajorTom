@@ -29,6 +29,11 @@ namespace MajorTom
                 get { return supplyBar.GetMaxValue(); }
                 set { supplyBar.SetMaxValue(value); }
             }
+            public void InterpolateValue(float amount, float time)
+            {
+                Debug.Log("interpolate");
+                supplyBar.InterpolateValue(amount, time);
+            }
         }
 
         // Supplies on the ISS
@@ -49,7 +54,9 @@ namespace MajorTom
 
         // Dictionary fo easy look up
         private Dictionary<ECargoItem, SupplyLevel> m_supplies;
-        
+
+        private Dictionary<ECargoItem, int> m_cargoCount;
+
         // Initialize in start since supply bar initialize in Awake
         private void Start()
         {
@@ -65,7 +72,12 @@ namespace MajorTom
             m_supplies.Add(ECargoItem.Food, m_foodSupply);
             m_supplies.Add(ECargoItem.Oxygen, m_oxygenSupply);
             m_supplies.Add(ECargoItem.Equipment, m_equipmentSupply);
-            
+
+            m_cargoCount = new Dictionary<ECargoItem, int>();
+            foreach(ECargoItem item in EnumUtil.GetValues<ECargoItem>())
+            {
+                m_cargoCount.Add(item, 0);
+            }
         }
         
         private void Update()
@@ -107,30 +119,36 @@ namespace MajorTom
             }
         }
         
+        /// <summary>
+        /// Fill up the supply levels
+        /// </summary>
+        /// <param name="supplies"></param>
+        /// <param name="resupplyTime"></param>
         public void Resupply(ECargoItem[] supplies, float resupplyTime)
         {
-            StartCoroutine(ResupplyRoutine(supplies, resupplyTime));
-        }
-
-        private IEnumerator ResupplyRoutine(ECargoItem[] supplies, float resupplyTime)
-        {
-            // Set a flag that we are resupplying
-            m_resupplying = true;
-            
-            // TODO: Add fekking interpolation 
-
-            foreach(ECargoItem item in supplies)
+            if(supplies == null)
             {
-                if(m_supplies.ContainsKey(item))
-                {
-                    AddSupplies(item, m_supplies[item].valuePerUnit);
-                }
+                // TODO: Feedback that the supply delivery was empty
+                return;
             }
 
-            // Set a the flag that resupplying is done
-            m_resupplying = false;
+            // Reset cargo count to 0
+            foreach(ECargoItem item in m_cargoCount.Keys.ToList())
+            {
+                m_cargoCount[item] = 0;
+            }
 
-            yield return null;
+            // Count the suppliese
+            foreach(ECargoItem item in supplies)
+            {
+                m_cargoCount[item]++;
+            }
+
+            // Increace the supplies by interpolating them
+            foreach(ECargoItem item in m_supplies.Keys.ToList())
+            {
+                m_supplies[item].InterpolateValue(m_cargoCount[item] * m_supplies[item].valuePerUnit, resupplyTime);
+            }
         }
     }
 }

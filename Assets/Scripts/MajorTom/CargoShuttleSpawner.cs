@@ -5,74 +5,77 @@ using Shared;
 using Util;
 using System;
 
-public class CargoShuttleSpawner : NetworkBehaviour
+namespace MajorTom
 {
-    [SerializeField]
-    public Util.GameObjectPool cargoShuttlePool;
-
-    // Singleton instance
-    public static CargoShuttleSpawner instance = null;
-
-    void Awake()
+    public class CargoShuttleSpawner : NetworkBehaviour
     {
-        // Singleton stuff
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
+        [SerializeField]
+        public Util.GameObjectPool cargoShuttlePool;
 
-        // Register message callback
-        NetworkServer.RegisterHandler((short)Shared.Defines.NET_ID.CLIENT, OnGroundControlMessage);
-    }
+        // Singleton instance
+        public static CargoShuttleSpawner instance = null;
 
-    /// <summary>
-    /// Spawns cargo shuttle with a slight offset depending on mission control's
-    /// launch success. 
-    /// </summary>
-    /// <param name="armBaseOffset: Position offset relative to Canadarm's base"></param>
-    /// <param name="isWithinReach: Can the player even grab it?"></param>
-    public bool SpawnCargoShuttle(float armBaseOffset, bool isWithinReach, ECargoItem[] cargoManifest)
-    {
-        GameObject cargoShuttleGameObject =  GetObjectFromPool();
-
-        // Object pool is empty
-        if(cargoShuttleGameObject == null)
+        void Awake()
         {
-            return false;
+            // Singleton stuff
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else if (instance != this)
+            {
+                Destroy(gameObject);
+            }
+
+            // Register message callback
+            NetworkServer.RegisterHandler((short)Shared.Defines.NET_ID.CLIENT, OnGroundControlMessage);
         }
 
-        // Get the object's script
-        CargoShuttle cargoShuttleClassObject = cargoShuttleGameObject.GetComponent<CargoShuttle>();
+        /// <summary>
+        /// Spawns cargo shuttle with a slight offset depending on mission control's
+        /// launch success. 
+        /// </summary>
+        /// <param name="armBaseOffset: Position offset relative to Canadarm's base"></param>
+        /// <param name="isWithinReach: Can the player even grab it?"></param>
+        public bool SpawnCargoShuttle(float armBaseOffset, bool isWithinReach, ECargoItem[] cargoManifest)
+        {
+            GameObject cargoShuttleGameObject = GetObjectFromPool();
 
-        // Call the spawning method in the object along with the related data
-        cargoShuttleClassObject.SpawnShuttleInScene(transform.position, armBaseOffset, isWithinReach, cargoManifest);        
-        return true;
-    }
+            // Object pool is empty
+            if (cargoShuttleGameObject == null)
+            {
+                return false;
+            }
 
-    // Gets object from pool -duh
-    private GameObject GetObjectFromPool()
-    {
-        return cargoShuttlePool.GetPooledObject();
-    }
+            // Get the object's script
+            CargoShuttle cargoShuttleClassObject = cargoShuttleGameObject.GetComponent<CargoShuttle>();
 
-    /// <summary>
-    /// Receives message from client. This holds the cargo manifest
-    /// and the success ratio of the launch
-    /// </summary>
-    /// <param name="netMsg"></param>
-    void OnGroundControlMessage(NetworkMessage netMsg)
-    {        
-        // Cast network message
-        CargoLaunchMsg msg = netMsg.ReadMessage<CargoLaunchMsg>();
+            // Call the spawning method in the object along with the related data
+            cargoShuttleClassObject.SpawnShuttleInScene(transform.position, armBaseOffset, isWithinReach, cargoManifest);
+            return true;
+        }
 
-        // Cast integer array to ECargoItem array
-        ECargoItem[] cargoManifest = Array.ConvertAll(msg.cargo, value => (ECargoItem)value);
+        // Gets object from pool -duh
+        private GameObject GetObjectFromPool()
+        {
+            return cargoShuttlePool.GetPooledObject();
+        }
 
-        // Spawn shuttle!
-        SpawnCargoShuttle(msg.successRatio, true, cargoManifest);        
+        /// <summary>
+        /// Receives message from client. This holds the cargo manifest
+        /// and the success ratio of the launch
+        /// </summary>
+        /// <param name="netMsg"></param>
+        void OnGroundControlMessage(NetworkMessage netMsg)
+        {
+            // Cast network message
+            CargoLaunchMsg msg = netMsg.ReadMessage<CargoLaunchMsg>();
+
+            // Cast integer array to ECargoItem array
+            ECargoItem[] cargoManifest = Array.ConvertAll(msg.cargo, value => (ECargoItem)value);
+
+            // Spawn shuttle!
+            SpawnCargoShuttle(msg.successRatio, true, cargoManifest);
+        }
     }
 }
