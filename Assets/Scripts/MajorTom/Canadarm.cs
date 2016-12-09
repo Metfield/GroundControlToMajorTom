@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Shared;
 
 namespace MajorTom
 {
@@ -28,11 +29,17 @@ namespace MajorTom
 
         // Arm rotation speed
         [SerializeField]
-        float armRotationSpeed;
+        float armRotationSpeedSlow = 3.0f;
+        [SerializeField]
+        float armRotationSpeedMedium = 6.0f;
+        [SerializeField]
+        float armRotationSpeedFast = 10.0f;
+
+        private float armRotationSpeed;
 
         [SerializeField]
         float grapplerRotationSpeed;
-
+        
         // Values that hold input magnitude
         private float horizontalValue;
         private float verticalValue;
@@ -58,6 +65,9 @@ namespace MajorTom
 
         private MajorTomManager m_majorTomManager;
 
+        public delegate void SpeedChange(ESpeed speed);
+        public static event SpeedChange SpeedChangeEvent;
+
         // Use this for initialization
         void Start()
         {
@@ -74,6 +84,8 @@ namespace MajorTom
             isTriggerPressed = false;
 
             m_majorTomManager = MajorTomManager.Instance;
+
+            armRotationSpeed = armRotationSpeedMedium;
         }
 
         void FixedUpdate()
@@ -123,6 +135,10 @@ namespace MajorTom
                     ReleaseCargoShuttle();
                 }
             }
+            else
+            {
+                GrappleFixtureInSight();
+            }
         }
 
         // Write on all input members
@@ -142,6 +158,30 @@ namespace MajorTom
             // Get POV Hat switch
             horizontalHSValue = Input.GetAxis("HatSwitchHorizontal");
             verticalHSValue = -Input.GetAxis("HatSwitchVertical");
+
+            // Set arm rotation speed
+            if(Input.GetButtonUp("Slow"))
+            {
+                armRotationSpeed = armRotationSpeedSlow;
+                TriggerSpeedChangeEvent(ESpeed.Slow);
+            }
+            else if (Input.GetButtonUp("Medium"))
+            {
+                armRotationSpeed = armRotationSpeedMedium;
+                TriggerSpeedChangeEvent(ESpeed.Medium);
+            }
+            else if (Input.GetButtonUp("Fast"))
+            {
+                armRotationSpeed = armRotationSpeedFast;
+                TriggerSpeedChangeEvent(ESpeed.Fast);
+            }
+        }
+
+        private void TriggerSpeedChangeEvent(ESpeed speed)
+        {
+            if(SpeedChangeEvent != null) {
+                SpeedChangeEvent(speed);
+            }
         }
 
         void ClearBouncing()
@@ -192,6 +232,14 @@ namespace MajorTom
             cargoShuttle.SendMessage("SetIsGrappled", false);
             wasTriggerLift = false;
             m_majorTomManager.ShuttleReleased();
+        }
+
+        private void GrappleFixtureInSight()
+        {
+            // Sphere cast against the grapple fixture layer to determine if a fixture is in sight
+            RaycastHit hit;
+            int layerMask = 1 << LayerMask.NameToLayer("GrappleFixture");
+            m_majorTomManager.GrapplerInSight(Physics.SphereCast(grapplerRoll.transform.position, 0.5f, -grapplerRoll.transform.right, out hit, float.MaxValue, layerMask));
         }
     }
 }

@@ -9,26 +9,21 @@ namespace MajorTom
         [SerializeField]
         private Image m_crosshairImage;
 
-        [SerializeField]
-        private Color m_defaultColor = Color.white;
-        [SerializeField]
-        private Color m_inSightColor = Color.white;
-        [SerializeField]
-        private Color m_inRangeColor = Color.white;
-        [SerializeField]
-        private Color m_grabbedColor = Color.white;
-
         [System.Serializable]
-        private class TextProperties
+        private class CrosshairProperties
         {
             public string text;
             public Color color = Color.white;
         }
 
         [SerializeField]
-        private TextProperties m_inRangeText;
+        private CrosshairProperties m_default;
         [SerializeField]
-        private TextProperties m_grabbedText;
+        private CrosshairProperties m_inSight;
+        [SerializeField]
+        private CrosshairProperties m_inRange;
+        [SerializeField]
+        private CrosshairProperties m_grabbed;
 
         [SerializeField]
         private Text m_crosshairText;
@@ -43,37 +38,58 @@ namespace MajorTom
         private void OnEnable()
         {
             MajorTomManager.GrappleContactEvent += InRange;
+            MajorTomManager.ShuttleGrabEvent += Grabbed;
+            MajorTomManager.ShuttleReleaseEvent += Released;
+            MajorTomManager.GrappleFixtureInSightEvent += InSight;
         }
 
         private void OnDisable()
         {
             MajorTomManager.GrappleContactEvent -= InRange;
+            MajorTomManager.ShuttleGrabEvent -= Grabbed;
+            MajorTomManager.ShuttleReleaseEvent -= Released;
+            MajorTomManager.GrappleFixtureInSightEvent -= InSight;
         }
 
         private void InRange(bool inRange)
         {
             if (inRange)
             {
-                m_crosshairImage.color = m_inRangeColor;
-                SetCrosshairText(m_inRangeText);
+                SetCrosshair(m_inRange);
             }
             else
             {
-                InSight();
+                SetCrosshair(m_default);
+            }
+        }
+        
+        private void InSight(bool inSight)
+        {
+            if (inSight)
+            {
+                SetCrosshair(m_inSight);
+            }
+            else
+            {
+                SetCrosshair(m_default);
             }
         }
 
-        private void InSight()
+        private void Grabbed()
         {
-            // TODO: Set default color if not in sight
-            m_crosshairImage.color = m_inSightColor;
-            m_crosshairText.text = "";
+            SetCrosshair(m_grabbed);
         }
 
-        private void SetCrosshairText(TextProperties textProperties)
+        private void Released()
         {
-            m_crosshairText.text = textProperties.text;
-            m_crosshairText.color = textProperties.color;
+            InRange(true);
+        }
+
+        private void SetCrosshair(CrosshairProperties properties)
+        {
+            m_crosshairImage.color = properties.color;
+            m_crosshairText.text = properties.text;
+            m_crosshairText.color = properties.color;
         }
     }
 }

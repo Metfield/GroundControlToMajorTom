@@ -27,6 +27,10 @@ namespace MajorTom
         public delegate void ShuttleRelease();
         public static event ShuttleRelease ShuttleReleaseEvent;
 
+        // Event when the a shuttle grapple fixture is in sight
+        public delegate void GrappleFixtureInSight(bool inSight);
+        public static event GrappleFixtureInSight GrappleFixtureInSightEvent;
+
         private void Awake()
         {
             cargoShuttleSpawner = CargoShuttleSpawner.instance;
@@ -59,8 +63,7 @@ namespace MajorTom
 
         private void SetupGame()
         {
-            ECargoItem[] dummyCargo = new ECargoItem[6];
-            bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true, dummyCargo);
+
         }
 
         private void GameStartUpdate()
@@ -70,11 +73,14 @@ namespace MajorTom
 
         private void GameUpdate()
         {
+            
+            // Test pod
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 ECargoItem[] dummyCargo = new ECargoItem[6];
                 bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true, dummyCargo);
             }
+            
         }
 
         private void GameOver()
@@ -104,6 +110,14 @@ namespace MajorTom
             if (ShuttleReleaseEvent != null)
             {
                 ShuttleReleaseEvent();
+            }
+        }
+
+        public void GrapplerInSight(bool inSight)
+        {
+            if (GrappleFixtureInSightEvent != null)
+            {
+                GrappleFixtureInSightEvent(inSight);
             }
         }
 
