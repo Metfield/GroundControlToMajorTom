@@ -73,7 +73,12 @@ namespace GroundControl
             m_transform = this.transform;
             m_timer = new Timer();
 
-            client = NetworkManager.singleton.client;
+            if(NetworkManager.singleton != null) {
+                client = NetworkManager.singleton.client;
+            }
+            else {
+                Log.Warning("No NetworkManager available");
+            }
         }
 
         private void OnEnable()
@@ -272,6 +277,12 @@ namespace GroundControl
         /// </summary>
         public void SendMessageToMajorTom()
         {
+            // Do nothing if there is no client
+            if (client == null) {
+                Log.Warning("No client available");
+                return;
+            }
+
             // Create network message 
             CargoLaunchMsg msg = new CargoLaunchMsg();
 

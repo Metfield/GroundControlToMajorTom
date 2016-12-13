@@ -76,7 +76,6 @@ namespace GroundControl
                     itemTile.SetProperties(itemProperties);
                     itemTile.SetPosition(Input.mousePosition);
                     itemTile.SetRotation(Quaternion.identity);
-                    itemTile.SetParent(m_gui.HeldTileParent);
                     tileObject.SetActive(true);
                 }
             }

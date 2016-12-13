@@ -112,6 +112,9 @@ namespace MajorTom
 
         private ECargoItem[] m_cargo;
 
+        private GameStateManager m_gameStateManager;
+        private StateMachine<EGameState> m_stateMachine;
+
         // Use this for initialization
         void Awake()
         {
@@ -135,10 +138,168 @@ namespace MajorTom
             targetDockRotation = Quaternion.Euler(0, 90, 0);
 
             majorTomManager = MajorTomManager.Instance;
+
+            m_gameStateManager = GameStateManager.Instance;
+
+            // Set up the state machine
+           // m_stateMachine = new StateMachine<EGameState>();
+            //m_stateMachine.AddState(EGameState.Game, null, GameUpdate);
+           // m_stateMachine.AddState(EGameState.GameOver, GameOver, null);
         }
 
         // Update is called once per frame
         void Update()
+        {
+            GameUpdate();
+        }
+
+        IEnumerator DisableAfterSecs()
+        {
+            yield return new WaitForSeconds(8);
+            isShuttleReturningToEarth = false;
+            gameObject.SetActive(false);
+        }
+
+        IEnumerator SitAndChill()
+        {
+            // Resupply the ISS
+            majorTomManager.ResupplyISS(m_cargo, sitAndChillTime);
+            yield return new WaitForSeconds(sitAndChillTime);
+            isShuttleReturningToEarth = true;
+        }
+
+        private float rotationTimer = 0.0f;
+
+        // Interpolates between the current position of the shuttle
+        // and the target position
+        void RunDockingInterpolationAnimation()
+        {
+            // Handle position first
+            // Calculate amount of distance to be covered at a clock tick
+            float coveredDistance = (Time.time - interpolationStartTime) * dockingTranslationSpeed;
+            float step = coveredDistance / interpolationPositionDistance;
+
+            // Interpolate position
+            transform.position = Vector3.Lerp(initialInterpolationPosition, targetDockPosition, step);
+
+            // Now handle rotation        
+            rotationTimer += Time.deltaTime;
+            transform.rotation = Quaternion.Lerp(initialInterpolationRotation, targetDockRotation, rotationTimer / dockingRotationDurationSecs);
+        }
+
+        public void SetIsGrappled(bool value)
+        {
+            isGrappled = value;
+
+            // Set the screen vfx
+            SetGrappleFixtureVfx(!value);
+            SetDockingTipVfx(value);
+
+        }
+
+        private void OnEnable()
+        {
+            // Calculate distance to ISS and duplicate it
+            trajectoryLength = (canadarm.transform.position.z - transform.position.z) * 2;
+
+            // Re-enable collisions
+            cargoRigidBody.detectCollisions = true;
+            cargoRigidBody.isKinematic = true;
+
+            // Set the screen vfx
+            SetGrappleFixtureVfx(true);
+            SetDockingTipVfx(false);
+
+            // Listen to state event
+            //GameStateManager.NewStateEvent += m_stateMachine.HandleNewState;
+        }
+
+        private void OnDisable()
+        {
+            isGrappled = false;
+            transform.parent = null;
+            isDocking = false;
+            isDocked = false;
+            waitingForCoroutine = false;
+            //GameStateManager.NewStateEvent -= m_stateMachine.HandleNewState;
+        }
+
+        public void SpawnShuttleInScene(Vector3 origin, float offset, bool isWithinReach, ECargoItem[] cargoManifest)
+        {
+            // Calculate an offset from the target position
+            float offsetX = Random.Range(spawnVariables.ranomMinRangeX, spawnVariables.ranomMinRangeX) + spawnVariables.offsetX;
+            float offsetY = Random.Range(spawnVariables.ranomMinRangeY, spawnVariables.ranomMinRangeY) + spawnVariables.offsetY;
+
+            // Set position to spawn point's origin
+            transform.position = origin;
+
+            // Move the targets location based on launch accuracy
+            Vector3 target = canadarm.transform.position;
+            target.x += offsetX;
+            target.y += offsetY;
+
+            // Get normalized velocity
+            velocity = -(transform.position - target).normalized;
+
+            // Set shuttle's cargo
+            SetCargo(cargoManifest);
+
+            // Finally enable the shuttle
+            gameObject.SetActive(true);
+        }
+
+        public void DockingHasBegan(Vector3 lockPosition)
+        {
+            // Start docking process
+            isDocking = true;
+
+            // Set docking position variable
+            targetDockPosition = lockPosition;
+            targetDockPosition.y += 3.5f;
+
+            // Make object a kinematic orphan :'( 
+            cargoRigidBody.isKinematic = true;
+            transform.parent = null;
+
+            // Release shuttle grapple
+            isGrappled = false;
+
+            // Interpolation is handled on the update method
+            // Set starting keyframes information
+            initialInterpolationPosition = transform.position;
+            initialInterpolationRotation = transform.rotation;
+
+            // Set the distance between start and end points
+            interpolationPositionDistance = Vector3.Distance(initialInterpolationPosition, targetDockPosition);
+
+            // Set initial time stamp
+            interpolationStartTime = Time.time;
+
+            // Disable screen vfx
+            SetGrappleFixtureVfx(false);
+            SetDockingTipVfx(false);
+        }
+
+        public void SetGrappleFixtureVfx(bool active)
+        {
+            m_screenVfx.grappleFixtureVfx.SetActive(active);
+        }
+
+        public void SetDockingTipVfx(bool active)
+        {
+            m_screenVfx.dockingTipVfx.SetActive(active);
+        }
+
+        /// <summary>
+        /// Set the cargo loaded on the shuttle
+        /// </summary>
+        /// <param name="cargo"></param>
+        public void SetCargo(ECargoItem[] cargo)
+        {
+            m_cargo = cargo;
+        }
+
+        private void GameUpdate()
         {
             // Shuttle is not docked, and therefore should behave normally
             if (!isDocked)
@@ -217,146 +378,11 @@ namespace MajorTom
             }
         }
 
-        IEnumerator DisableAfterSecs()
+        private void GameOver()
         {
-            yield return new WaitForSeconds(8);
+            // Deactivate shuttle
             isShuttleReturningToEarth = false;
             gameObject.SetActive(false);
-        }
-
-        IEnumerator SitAndChill()
-        {
-            // Resupply the ISS
-            majorTomManager.ResupplyISS(m_cargo, sitAndChillTime);
-            yield return new WaitForSeconds(sitAndChillTime);
-            isShuttleReturningToEarth = true;
-        }
-
-        private float rotationTimer = 0.0f;
-
-        // Interpolates between the current position of the shuttle
-        // and the target position
-        void RunDockingInterpolationAnimation()
-        {
-            // Handle position first
-            // Calculate amount of distance to be covered at a clock tick
-            float coveredDistance = (Time.time - interpolationStartTime) * dockingTranslationSpeed;
-            float step = coveredDistance / interpolationPositionDistance;
-
-            // Interpolate position
-            transform.position = Vector3.Lerp(initialInterpolationPosition, targetDockPosition, step);
-
-            // Now handle rotation        
-            rotationTimer += Time.deltaTime;
-            transform.rotation = Quaternion.Lerp(initialInterpolationRotation, targetDockRotation, rotationTimer / dockingRotationDurationSecs);
-        }
-
-        public void SetIsGrappled(bool value)
-        {
-            isGrappled = value;
-
-            // Set the screen vfx
-            SetGrappleFixtureVfx(!value);
-            SetDockingTipVfx(value);
-
-        }
-
-        void OnEnable()
-        {
-            // Calculate distance to ISS and duplicate it
-            trajectoryLength = (canadarm.transform.position.z - transform.position.z) * 2;
-
-            // Re-enable collisions
-            cargoRigidBody.detectCollisions = true;
-            cargoRigidBody.isKinematic = true;
-
-            // Set the screen vfx
-            SetGrappleFixtureVfx(true);
-            SetDockingTipVfx(false);
-        }
-
-        void OnDisable()
-        {
-            isGrappled = false;
-            transform.parent = null;
-            isDocking = false;
-            isDocked = false;
-            waitingForCoroutine = false;
-        }
-
-        public void SpawnShuttleInScene(Vector3 origin, float offset, bool isWithinReach, ECargoItem[] cargoManifest)
-        {
-            // Calculate an offset from the target position
-            float offsetX = Random.Range(spawnVariables.ranomMinRangeX, spawnVariables.ranomMinRangeX) + spawnVariables.offsetX;
-            float offsetY = Random.Range(spawnVariables.ranomMinRangeY, spawnVariables.ranomMinRangeY) + spawnVariables.offsetY;
-
-            // Set position to spawn point's origin
-            transform.position = origin;
-
-            // Move the targets location based on launch accuracy
-            Vector3 target = canadarm.transform.position;
-            target.x += offsetX;
-            target.y += offsetY;
-
-            // Get normalized velocity
-            velocity = -(transform.position - target).normalized;
-
-            // Set shuttle's cargo
-            SetCargo(cargoManifest);
-
-            // Finally enable the shuttle
-            gameObject.SetActive(true);
-        }
-
-        public void DockingHasBegan(Vector3 lockPosition)
-        {
-            // Start docking process
-            isDocking = true;
-
-            // Set docking position variable
-            targetDockPosition = lockPosition;
-            targetDockPosition.y += 3.5f;
-
-            // Make object a kinematic orphan :'( 
-            cargoRigidBody.isKinematic = true;
-            transform.parent = null;
-
-            // Release shuttle grapple
-            isGrappled = false;
-
-            // Interpolation is handled on the update method
-            // Set starting keyframes information
-            initialInterpolationPosition = transform.position;
-            initialInterpolationRotation = transform.rotation;
-
-            // Set the distance between start and end points
-            interpolationPositionDistance = Vector3.Distance(initialInterpolationPosition, targetDockPosition);
-
-            // Set initial time stamp
-            interpolationStartTime = Time.time;
-
-            // Disable screen vfx
-            SetGrappleFixtureVfx(false);
-            SetDockingTipVfx(false);
-        }
-
-        public void SetGrappleFixtureVfx(bool active)
-        {
-            m_screenVfx.grappleFixtureVfx.SetActive(active);
-        }
-
-        public void SetDockingTipVfx(bool active)
-        {
-            m_screenVfx.dockingTipVfx.SetActive(active);
-        }
-
-        /// <summary>
-        /// Set the cargo loaded on the shuttle
-        /// </summary>
-        /// <param name="cargo"></param>
-        public void SetCargo(ECargoItem[] cargo)
-        {
-            m_cargo = cargo;
         }
     }
 }

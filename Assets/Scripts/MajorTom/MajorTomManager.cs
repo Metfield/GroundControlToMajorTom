@@ -59,11 +59,15 @@ namespace MajorTom
         private void Update()
         {
             m_stateMachine.Update();
+            if(Input.GetKeyDown(KeyCode.R))
+            {
+                m_gameStateManager.SetNewState(EGameState.WaitingForPlayers);
+            }
         }
 
         private void SetupGame()
         {
-
+            cargoShuttleSpawner.Reset();
         }
 
         private void GameStartUpdate()
@@ -81,6 +85,11 @@ namespace MajorTom
                 bool spawningSuccessful = cargoShuttleSpawner.SpawnCargoShuttle(0.0f, true, dummyCargo);
             }
             
+            // Test times up
+            if(Input.GetKeyDown(KeyCode.E))
+            {
+                TimesUp();
+            }
         }
 
         private void GameOver()
@@ -119,6 +128,14 @@ namespace MajorTom
             {
                 GrappleFixtureInSightEvent(inSight);
             }
+        }
+
+        /// <summary>
+        /// Times up, end the game
+        /// </summary>
+        public void TimesUp()
+        {
+            m_gameStateManager.SetNewState(EGameState.GameOver);
         }
 
         /// <summary>

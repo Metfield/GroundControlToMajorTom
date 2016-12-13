@@ -26,6 +26,8 @@ namespace GroundControl
 
         [SerializeField]
         private int m_baseLaunchCost = 10;
+        [SerializeField]
+        private int m_cargoShipCollectedBonus = 0;
 
         private int m_currentLaunchCost;
 
@@ -97,10 +99,15 @@ namespace GroundControl
         {
             if (Time.time >= m_incomeTime)
             {
-                UpdatePlayerMoney(m_income);
-                UpdateMoneyUI(m_player.GetMoney());
+                AddMoney(m_income);
                 SetIncomeTime();
             }
+        }
+
+        public void AddMoney(int amount)
+        {
+            UpdatePlayerMoney(amount);
+            UpdateMoneyUI(m_player.GetMoney());
         }
 
         private void SetIncomeTime()
@@ -237,6 +244,15 @@ namespace GroundControl
                 position = m_shipToLaunch.transform.position;
             }
             return position;
+        }
+
+        /// <summary>
+        /// Called when the ISS collects a cargo ship
+        /// </summary>
+        public void CargoShipCollected()
+        {
+            // Add money bonus
+            AddMoney(m_cargoShipCollectedBonus);
         }
 
         private void TimesUp()

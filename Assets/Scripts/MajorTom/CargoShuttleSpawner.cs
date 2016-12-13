@@ -77,5 +77,10 @@ namespace MajorTom
             // Spawn shuttle!
             SpawnCargoShuttle(msg.successRatio, true, cargoManifest);
         }
+
+        public void Reset()
+        {
+            cargoShuttlePool.Reset();
+        }
     }
 }

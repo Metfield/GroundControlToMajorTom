@@ -57,14 +57,22 @@ namespace MajorTom
 
         private Dictionary<ECargoItem, int> m_cargoCount;
 
+        private StateMachine<EGameState> m_stateMachine;
+
+        private void Awake()
+        {
+            // Set up state machine
+            m_stateMachine = new StateMachine<EGameState>();
+            m_stateMachine.AddState(EGameState.StartingGame, SetupGame, null);
+            m_stateMachine.AddState(EGameState.Game, null, GameUpdate);
+            m_stateMachine.AddState(EGameState.GameOver, GameOver, null);
+        }
+
         // Initialize in start since supply bar initialize in Awake
         private void Start()
         {
             // Set inititial supply values
-            m_waterSupply.supplyBar.InitializeValues(MAX_SUPPLY_VALUE, m_waterSupply.initialValue);
-            m_foodSupply.supplyBar.InitializeValues(MAX_SUPPLY_VALUE, m_foodSupply.initialValue);
-            m_oxygenSupply.supplyBar.InitializeValues(MAX_SUPPLY_VALUE, m_oxygenSupply.initialValue);
-            m_equipmentSupply.supplyBar.InitializeValues(MAX_SUPPLY_VALUE, m_equipmentSupply.initialValue);
+            SetupGame();
 
             // Add the supplies to the dictionary
             m_supplies = new Dictionary<ECargoItem, SupplyLevel>();
@@ -79,17 +87,20 @@ namespace MajorTom
                 m_cargoCount.Add(item, 0);
             }
         }
-        
+
+        private void OnEnable()
+        {
+            GameStateManager.NewStateEvent += m_stateMachine.HandleNewState;
+        }
+
+        private void OnDisable()
+        {
+            GameStateManager.NewStateEvent -= m_stateMachine.HandleNewState;
+        }
+
         private void Update()
         {
-            if(!m_resupplying)
-            {
-                // Deteriorate the supplies if we are not resupplying
-                DeteriorateSupply(ECargoItem.Water);
-                DeteriorateSupply(ECargoItem.Food);
-                DeteriorateSupply(ECargoItem.Oxygen);
-                DeteriorateSupply(ECargoItem.Equipment);
-            }
+            m_stateMachine.Update();
         }
         
         /// <summary>
@@ -149,6 +160,32 @@ namespace MajorTom
             {
                 m_supplies[item].InterpolateValue(m_cargoCount[item] * m_supplies[item].valuePerUnit, resupplyTime);
             }
+        }
+
+        private void SetupGame()
+        {
+            // Set inititial supply values
+            m_waterSupply.supplyBar.InitializeValues(MAX_SUPPLY_VALUE, m_waterSupply.initialValue);
+            m_foodSupply.supplyBar.InitializeValues(MAX_SUPPLY_VALUE, m_foodSupply.initialValue);
+            m_oxygenSupply.supplyBar.InitializeValues(MAX_SUPPLY_VALUE, m_oxygenSupply.initialValue);
+            m_equipmentSupply.supplyBar.InitializeValues(MAX_SUPPLY_VALUE, m_equipmentSupply.initialValue);
+        }
+
+        private void GameUpdate()
+        {
+            if (!m_resupplying)
+            {
+                // Deteriorate the supplies if we are not resupplying
+                DeteriorateSupply(ECargoItem.Water);
+                DeteriorateSupply(ECargoItem.Food);
+                DeteriorateSupply(ECargoItem.Oxygen);
+                DeteriorateSupply(ECargoItem.Equipment);
+            }
+        }
+
+        private void GameOver()
+        {
+
         }
     }
 }

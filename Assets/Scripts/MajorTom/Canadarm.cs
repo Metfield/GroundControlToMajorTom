@@ -68,6 +68,25 @@ namespace MajorTom
         public delegate void SpeedChange(ESpeed speed);
         public static event SpeedChange SpeedChangeEvent;
 
+        private GameStateManager m_gameStateManager;
+        private StateMachine<EGameState> m_stateMachine;
+        
+        private void Awake()
+        {
+            m_gameStateManager = GameStateManager.Instance;
+            m_stateMachine = new StateMachine<EGameState>();
+        }
+
+        private void OnEnable()
+        {
+            GameStateManager.NewStateEvent += m_stateMachine.HandleNewState;
+        }
+
+        private void OnDisable()
+        {
+            GameStateManager.NewStateEvent -= m_stateMachine.HandleNewState;
+        }
+
         // Use this for initialization
         void Start()
         {
@@ -87,9 +106,13 @@ namespace MajorTom
 
             armRotationSpeed = armRotationSpeedMedium;
         }
-
+        
         void FixedUpdate()
         {
+            // Don't update if not game state
+            if (m_stateMachine.CurrentState != EGameState.Game)
+                return;
+
             GetInput();
 
             // Handle first joint (horizontal)
@@ -119,7 +142,7 @@ namespace MajorTom
         {
             // Stop object if there is no input 
             ClearBouncing();
-
+            
             if (cargoShuttle != null)
             {
                 if (grapplerFixtureContact)

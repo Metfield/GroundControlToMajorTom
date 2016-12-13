@@ -37,12 +37,6 @@ namespace GroundControl
         private const string CURRENCY = "$ ";
 
         [SerializeField]
-        private RectTransform m_heldTileParent;
-        public RectTransform HeldTileParent {
-            get { return m_heldTileParent; }
-        }
-
-        [SerializeField]
         private RectTransform m_placedTileParent;
         public RectTransform PlacedTileParent {
             get { return m_placedTileParent; }
@@ -148,7 +142,7 @@ namespace GroundControl
         /// <param name="present"></param>
         public void CargoMenuPresent(bool present)
         {
-            // It is only allowed to buy cargo items if the cargo manu is present
+            // It is only allowed to buy cargo items if the cargo menu is present
             if(BuyingAllowedEvent != null) {
                 BuyingAllowedEvent(present);
             }

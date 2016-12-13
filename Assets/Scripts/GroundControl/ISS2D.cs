@@ -28,11 +28,14 @@ namespace GroundControl
         private Transform m_transform;
         private Vector3 m_intitialScale;
 
+        private GroundControlManager m_groundControlManager;
+
         private void Awake()
         {
             m_orbit = this.GetComponent<Orbit2D>();
             m_transform = this.transform;
             m_intitialScale = m_transform.localScale;
+            m_groundControlManager = GroundControlManager.Instance;
         }
 
         private void Update()
@@ -43,6 +46,7 @@ namespace GroundControl
         private void CollectCargoShip(CargoShip2D cargoShip)
         {
             cargoShip.WasCollected();
+            m_groundControlManager.CargoShipCollected();
         }
 
         private void OnTriggerEnter2D(Collider2D other)

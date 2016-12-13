@@ -17,7 +17,7 @@ namespace Shared
         private StateUpdate m_currentUpdate;
 
         private T m_currentState;
-        private T CurrentState {
+        public T CurrentState {
             get { return m_currentState; }
         }
 
@@ -68,6 +68,14 @@ namespace Shared
         /// <param name="state"></param>
         public void HandleNewState(T state)
         {
+            // Store the current state
+            m_currentState = state;
+
+            // Return if no implementation have been added for this state
+            if (!m_onNewStates.ContainsKey(state) && !m_stateUpdates.ContainsKey(state)) {
+                return;
+            }
+
             // Call the on new state
             OnNewState onNewState = m_onNewStates[state];
             if(onNewState != null) {
@@ -83,9 +91,6 @@ namespace Shared
                 // Empty dummy function if not defined
                 m_currentUpdate = () => { };
             }
-
-            // Store the current state
-            m_currentState = state;
         }
     }
 }
