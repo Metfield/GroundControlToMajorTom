@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using Shared;
 
@@ -134,6 +135,11 @@ namespace GroundControl
         public void RestartGame()
         {
             m_gameState.SetNewState(EGameState.WaitingForPlayers);
+        }
+
+        public void ReturnToLobby()
+        {
+            SceneManager.LoadSceneAsync("Lobby");
         }
 
         /// <summary>

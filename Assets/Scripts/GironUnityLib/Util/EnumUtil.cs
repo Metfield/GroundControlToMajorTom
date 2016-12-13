@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Util
 {
@@ -39,6 +40,16 @@ namespace Util
                 dic.Add(enumStr, value);
             }
             return dic;
+        }
+
+        /// <summary>
+        /// Get the max value that the enum can have.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>Max value</returns>
+        public static T MaxValue<T>()
+        {
+            return Enum.GetValues(typeof(T)).Cast<T>().Max();
         }
     }
 }

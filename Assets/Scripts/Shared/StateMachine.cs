@@ -25,6 +25,9 @@ namespace Shared
         {
             m_onNewStates = new Dictionary<T, OnNewState>();
             m_stateUpdates = new Dictionary<T, StateUpdate>();
+
+            // Current update empty by default
+            m_currentUpdate = () => { };
         }
 
         /// <summary>
