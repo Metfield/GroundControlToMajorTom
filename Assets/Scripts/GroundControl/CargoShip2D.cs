@@ -194,6 +194,10 @@ namespace GroundControl
         /// </summary>
         public void WasCollected()
         {
+            // Send message over network and notify success
+            SendMessageToMajorTom();
+
+            // Remove cargo ship from scene
             Remove();
         }
 
@@ -233,8 +237,6 @@ namespace GroundControl
                 m_timer.Start();
                 m_audioSource.PlayOneShot(m_sfx.launchSfx);
             }
-
-            SendMessageToMajorTom();
         }
 
         /// <summary>
