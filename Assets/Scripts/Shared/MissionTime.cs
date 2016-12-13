@@ -2,10 +2,13 @@
 using UnityEngine.UI;
 using System.Collections;
 using Util;
+using UnityEngine.Networking;
+using System;
+using UnityEngine.Networking.NetworkSystem;
 
 namespace Shared
 {
-    public class MissionTime : MonoBehaviour
+    public class MissionTime : NetworkBehaviour
     {
         [SerializeField]
         private float m_missionTime;
@@ -26,9 +29,21 @@ namespace Shared
         public delegate void TimesUp();
         public static event TimesUp TimesUpEvent;
 
+        public NetworkClient client;
+
         private void Start()
         {
             m_timer = new Timer();
+
+            // Get network client
+            if (NetworkManager.singleton != null)
+            {
+                client = NetworkManager.singleton.client;
+            }
+            else
+            {
+                Log.Warning("No NetworkManager available");
+            }
         }
 
         private void OnEnable()
@@ -63,7 +78,9 @@ namespace Shared
                     {
                         TimesUpEvent();
                     }
+
                     m_timer.Stop();
+                    SendTimesUpMessage();
                 }
             }
         }
@@ -95,6 +112,19 @@ namespace Shared
                     // Do nothing
                     break;
             }
+        }
+
+        private void SendTimesUpMessage()
+        {
+            // Do nothing if there is no client
+            if (client == null)
+            {
+                Log.Warning("No client available");
+                return;
+            }
+
+            // Send empty message with GAME_OVER ID
+            client.Send((short)Defines.GAME_OVER, new EmptyMessage());
         }
     }
 }

@@ -28,7 +28,8 @@ namespace MajorTom
             }
 
             // Register message callback
-            NetworkServer.RegisterHandler((short)Shared.Defines.NET_ID.CLIENT, OnGroundControlMessage);
+            NetworkServer.RegisterHandler((short)Defines.NET_ID.CLIENT, OnGroundControlMessage);
+            NetworkServer.RegisterHandler((short)Defines.GAME_OVER, OnGameOver);
         }
 
         /// <summary>
@@ -76,6 +77,15 @@ namespace MajorTom
 
             // Spawn shuttle!
             SpawnCargoShuttle(msg.successRatio, true, cargoManifest);
+        }
+
+        /// <summary>
+        /// Gets game over (time's up) message from GrounControl 
+        /// </summary>
+        /// <param name="netMsg"></param>
+        void OnGameOver(NetworkMessage netMsg)
+        {            
+            MajorTomManager.Instance.TimesUp();
         }
 
         public void Reset()

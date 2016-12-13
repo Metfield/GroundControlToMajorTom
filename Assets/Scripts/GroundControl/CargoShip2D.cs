@@ -292,7 +292,7 @@ namespace GroundControl
             // Fill success ratio variable
             msg.successRatio = 0;
 
-            // Send message with the cliend ID
+            // Send message with the client ID
             client.Send((short)Defines.NET_ID.CLIENT, msg);
         }
     }
