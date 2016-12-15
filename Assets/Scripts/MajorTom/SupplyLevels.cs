@@ -15,7 +15,7 @@ namespace MajorTom
         {
             public ECargoItem item;         // The supply item
             public ValueBar supplyBar;      // Bar to visualize the supply level
-            public float deteriationRate;   // Deteriation rate in units per seconds
+            public float deteriorationRate;   // Deterioration rate in units per seconds
             [Range(0f, 100f)]
             public float initialValue;      // Initial value for the supply
             public float valuePerUnit;      // Value for a single supply unit from the cargo shuttle
@@ -102,9 +102,9 @@ namespace MajorTom
         {
             m_stateMachine.Update();
         }
-        
+
         /// <summary>
-        /// Deteriorate a supply according to its deteriation rate
+        /// Deteriorate a supply according to its deterioration rate
         /// </summary>
         /// <param name="item">The supply to deteriorate</param>
         private void DeteriorateSupply(ECargoItem item)
@@ -112,7 +112,7 @@ namespace MajorTom
             SupplyLevel supply = m_supplies[item];
             if(supply != null)
             {
-                supply.Value = supply.Value - supply.deteriationRate * Time.deltaTime;
+                supply.Value = supply.Value - supply.deteriorationRate * Time.deltaTime;
             }
         }
 
