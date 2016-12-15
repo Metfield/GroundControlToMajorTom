@@ -28,8 +28,8 @@ namespace MajorTom
             }
 
             // Register message callback
-            NetworkServer.RegisterHandler((short)Defines.NET_ID.CLIENT, OnGroundControlMessage);
-            NetworkServer.RegisterHandler((short)Defines.GAME_OVER, OnGameOver);
+            NetworkServer.RegisterHandler((short)Defines.NET_MSG_ID.SHUTTLE_LAUNCH, OnGroundControlMessage);
+            NetworkServer.RegisterHandler((short)Defines.NET_MSG_ID.GAME_OVER, OnGameOver);
         }
 
         /// <summary>

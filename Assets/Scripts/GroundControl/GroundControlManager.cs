@@ -2,6 +2,7 @@
 using System.Collections;
 using Util;
 using Shared;
+using UnityEngine.Networking;
 
 namespace GroundControl
 {
@@ -38,7 +39,12 @@ namespace GroundControl
         private GroundControlGUI m_gui;
 
         private StateMachine<EGameState> m_stateMachine;
-        
+
+        // tHIUS WOILL TAKE CARE OF EVERYTHYING GAME OVER MSG RELATED!!!!
+        private static GameOverNetMessageHandler gameOverMsgHandler; // EMMANUEL WORK HERE!!!
+        // ASDFKASDHJFSLADKFJAS DFLKASDJ 
+        //ASDFASLDFJA SDÖLAKJS FÖALSKDJSDA ÖLFKJSADÖ FLSDJ ÖLKJ LÖK
+
         private void Awake()
         {
             m_gameState = GameStateManager.Instance;

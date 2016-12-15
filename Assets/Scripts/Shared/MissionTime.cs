@@ -124,7 +124,7 @@ namespace Shared
             }
 
             // Send empty message with GAME_OVER ID
-            client.Send((short)Defines.GAME_OVER, new EmptyMessage());
+            client.Send((short)Defines.NET_MSG_ID.GAME_OVER, new EmptyMessage());
         }
     }
 }
