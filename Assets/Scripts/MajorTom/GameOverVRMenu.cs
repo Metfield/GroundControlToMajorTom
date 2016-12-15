@@ -142,7 +142,9 @@ namespace MajorTom
 
         private void PlayAgain()
         {
+
             Debug.Log("Again!");
+
         }
 
         private void ReturnToLobby()
