@@ -13,6 +13,9 @@ namespace GroundControl
         private float m_launchCooldown = 1.0f;
 
         [SerializeField]
+        private float m_launchPrepTimePerClick = 1.0f;
+
+        [SerializeField]
         private CargoShipSpawner m_cargoShipSpawner;
 
         private CargoShip2D m_shipToLaunch;
@@ -94,7 +97,7 @@ namespace GroundControl
 
         private void UpdateLaunch()
         {
-            m_launchTimer.Tick(Time.deltaTime);
+            TickLaunchTimer(Time.deltaTime);
             if (m_shipToLaunch == null)
             {
                 m_gui.SetNextShuttleTimer(m_launchTimer.Time);
@@ -104,6 +107,16 @@ namespace GroundControl
                     m_gui.SetNextShuttleTimer(0f);
                 }
             }
+        }
+
+        private void TickLaunchTimer(float deltaTime)
+        {
+            m_launchTimer.Tick(deltaTime);
+        }
+
+        public void AddLaunchPreperationTime()
+        {
+            TickLaunchTimer(m_launchPrepTimePerClick);
         }
 
         private void UpdateIncome()
