@@ -293,7 +293,7 @@ namespace GroundControl
             msg.successRatio = 0;
 
             // Send message with the client ID
-            client.Send((short)Defines.NET_ID.CLIENT, msg);
+            client.Send((short)Defines.NET_MSG_ID.SHUTTLE_LAUNCH, msg);
         }
     }
 }

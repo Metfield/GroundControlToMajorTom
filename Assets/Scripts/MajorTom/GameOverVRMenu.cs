@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Shared;
 using Util;
-
+using UnityEngine.Networking;
+using UnityEngine.Networking.NetworkSystem;
+using UnityEngine.SceneManagement;
 
 namespace MajorTom
 {
-    public class GameOverVRMenu : MonoBehaviour
+    public class GameOverVRMenu : NetworkBehaviour
     {
         [SerializeField]
         private Text m_playAgainText;
@@ -42,6 +44,10 @@ namespace MajorTom
 
         private bool m_stickWasNeutral = true;
 
+        // Network:Replay-related stuff
+        public NetworkClient m_client;
+        private bool m_clientWantsReplay;
+
         private void Awake()
         {
             m_stateMachine = new StateMachine<EGameState>();
@@ -53,6 +59,14 @@ namespace MajorTom
             m_optionTexts.Add(EGameOverMenuOption.ReturnToLobby, m_returnToLobbyText);
             
             m_maxOptionValue = EnumUtil.MaxValue<EGameOverMenuOption>();
+
+            m_clientWantsReplay = false;
+        }
+
+        private void Start()
+        {
+            m_client = NetworkManager.singleton.client;
+            NetworkServer.RegisterHandler((short)Defines.NET_MSG_ID.CLIENT_WANTSREPLAY, GameControlWantsReplay);
         }
 
         private void OnEnable()
@@ -68,6 +82,12 @@ namespace MajorTom
         private void Update()
         {
             m_stateMachine.Update();
+
+            if(m_clientWantsReplay)
+            {
+                m_clientWantsReplay = false;
+                RestartSession();
+            }
         }
 
         private void Setup()
@@ -144,12 +164,41 @@ namespace MajorTom
         {
 
             Debug.Log("Again!");
+            SendReplayMsg();
 
+            // Clear current options
+
+            // Print "Waiting for Ground Control..."
+
+            
         }
 
         private void ReturnToLobby()
         {
             Debug.Log("Return!");
+        }
+
+        private void SendReplayMsg()
+        {
+            // Do nothing if there is no client
+            if (m_client == null)
+            {
+                Log.Warning("No client available");
+                return;
+            }
+
+            // Send empty message with GAME_OVER ID
+            m_client.Send((short)Defines.NET_MSG_ID.HOST_WANTSREPLAY, new EmptyMessage());
+        }
+
+        private void RestartSession()
+        {
+            SceneManager.LoadSceneAsync("MajorTom");
+        }
+
+        private void GameControlWantsReplay(NetworkMessage netMsg)
+        {
+            m_clientWantsReplay = true;
         }
     }
 }
