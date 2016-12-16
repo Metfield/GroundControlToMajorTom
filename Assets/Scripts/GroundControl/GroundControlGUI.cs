@@ -46,6 +46,9 @@ namespace GroundControl
         [SerializeField]
         private GameObject m_endScreen;
 
+        [SerializeField]
+        private ValueBar m_timeToNextShuttleBar;
+
         private GameStateManager m_gameState;
 
         public delegate void BuyingAllowed(bool allowed);
@@ -157,6 +160,16 @@ namespace GroundControl
         public ECargoItem[] GetCargo()
         {
             return m_cargoMenu.GetCargoContent();
+        }
+
+        public void SetLaunchCooldown(float cooldown)
+        {
+            m_timeToNextShuttleBar.SetMaxValue(cooldown);
+        }
+
+        public void SetNextShuttleTimer(float time)
+        {
+            m_timeToNextShuttleBar.SetValue(time);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace GroundControl
         private int m_baseLaunchCost = 10;
         [SerializeField]
         private int m_cargoShipCollectedBonus = 0;
-
+        
         private int m_currentLaunchCost;
 
         private float m_incomeTime;
@@ -52,6 +52,9 @@ namespace GroundControl
             m_stateMachine.AddState(EGameState.StartingGame, SetupGame, GameStartUpdate);
             m_stateMachine.AddState(EGameState.Game, null, GameStateUpdate);
             m_stateMachine.AddState(EGameState.GameOver, GameOver, null);
+
+            m_gui.SetLaunchCooldown(m_launchCooldown);
+            m_gui.SetNextShuttleTimer(0);
         }
         
         private void OnEnable()
@@ -88,9 +91,11 @@ namespace GroundControl
             m_launchTimer.Tick(Time.deltaTime);
             if (m_shipToLaunch == null)
             {
+                m_gui.SetNextShuttleTimer(m_launchTimer.Time);
                 if (m_launchTimer.Time >= m_launchCooldown)
                 {
                     PrepareCargoShipForLaunch();
+                    m_gui.SetNextShuttleTimer(0f);
                 }
             }
         }
@@ -293,6 +298,11 @@ namespace GroundControl
         private void GameStartUpdate()
         {
             m_gameState.SetNewState(EGameState.Game);
+        }
+
+        public float GetLaunchCooldown()
+        {
+            return m_launchCooldown;
         }
     }
 }
