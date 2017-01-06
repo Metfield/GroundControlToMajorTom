@@ -37,7 +37,7 @@ namespace MajorTom
             PlayAgain,
             ReturnToLobby
         }
-
+        
         private EGameOverMenuOption m_currentOption;
 
         private EGameOverMenuOption m_maxOptionValue;
@@ -61,13 +61,10 @@ namespace MajorTom
             m_maxOptionValue = EnumUtil.MaxValue<EGameOverMenuOption>();
 
             m_clientWantsReplay = false;
-        }
 
-        private void Start()
-        {
-            m_client = NetworkManager.singleton.client;
+            m_client = NetworkManager.singleton.client;            
             NetworkServer.RegisterHandler((short)Defines.NET_MSG_ID.CLIENT_WANTSREPLAY, GameControlWantsReplay);
-        }
+        }        
 
         private void OnEnable()
         {
@@ -101,6 +98,9 @@ namespace MajorTom
 
         private void GameOver()
         {
+            Debug.Log("GAMEOVER!");
+            gameObject.SetActive(true);
+            NetworkServer.SpawnObjects();
             SetOption(EGameOverMenuOption.PlayAgain);
         }
 
@@ -138,7 +138,7 @@ namespace MajorTom
             }
 
             // Execute selected option when trigger is klicked
-            if (Input.GetButtonUp("Fire1"))
+            if (Input.GetButtonUp("Fire1") || Input.GetKeyDown(KeyCode.Space))
             {
                 switch (m_currentOption)
                 {
@@ -181,14 +181,26 @@ namespace MajorTom
         private void SendReplayMsg()
         {
             // Do nothing if there is no client
-            if (m_client == null)
+            /*if (m_client == null)
             {
                 Log.Warning("No client available");
                 return;
+            }*/
+
+            if(connectionToServer != null)
+            {
+                Debug.Log("TO SERVER!");
+            }
+
+            if (connectionToClient != null)
+            {
+                Debug.Log("TO CLIENMT!");
             }
 
             // Send empty message with GAME_OVER ID
             m_client.Send((short)Defines.NET_MSG_ID.HOST_WANTSREPLAY, new EmptyMessage());
+            connectionToServer.Send((short)Defines.NET_MSG_ID.HOST_WANTSREPLAY, new EmptyMessage());
+            //connectionToClient.se
         }
 
         private void RestartSession()

@@ -9,9 +9,15 @@ public class GameOverNetMessageHandler : NetworkBehaviour
     public NetworkClient m_client;
     private bool m_majorTomWantsReplay;
 
+    public GameOverNetMessageHandler()
+    {
+        Debug.Log("BLASHDLASKDBANSLKD!");
+    }
+
 	// Use this for initialization
 	void Start ()
     {
+        Debug.Log("GONetMSH::START");
         m_majorTomWantsReplay = false;
 
         m_client = NetworkManager.singleton.client;
@@ -21,7 +27,8 @@ public class GameOverNetMessageHandler : NetworkBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-	    if(m_majorTomWantsReplay)
+        Debug.Log("GONetMSH::UPDATE");
+        if (m_majorTomWantsReplay)
         {
             m_majorTomWantsReplay = false;
             RestartSession();
@@ -30,6 +37,7 @@ public class GameOverNetMessageHandler : NetworkBehaviour
 
     void MajorTomWantsReplay(NetworkMessage netMsg)
     {
+        Debug.Log("OJ!! GOT shiet!");
         m_majorTomWantsReplay = true;
     }
 

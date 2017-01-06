@@ -40,11 +40,9 @@ namespace GroundControl
 
         private StateMachine<EGameState> m_stateMachine;
 
-        // tHIUS WOILL TAKE CARE OF EVERYTHYING GAME OVER MSG RELATED!!!!
-        private static GameOverNetMessageHandler gameOverMsgHandler; // EMMANUEL WORK HERE!!!
-        // ASDFKASDHJFSLADKFJAS DFLKASDJ 
-        //ASDFASLDFJA SDÖLAKJS FÖALSKDJSDA ÖLFKJSADÖ FLSDJ ÖLKJ LÖK
-
+        // Game over network hack
+        private GameOverNetMessageHandler gameOverMsgHandler; 
+  
         private void Awake()
         {
             m_gameState = GameStateManager.Instance;
@@ -61,6 +59,9 @@ namespace GroundControl
 
             m_gui.SetLaunchCooldown(m_launchCooldown);
             m_gui.SetNextShuttleTimer(0);
+
+            // Create GONetMsgObject
+            gameOverMsgHandler = new GameOverNetMessageHandler();
         }
         
         private void OnEnable()
@@ -83,7 +84,7 @@ namespace GroundControl
 
         private void Update()
         {
-            m_stateMachine.Update();
+            m_stateMachine.Update();            
         }
         
         private void GameStateUpdate()
